@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class SearchPlayerPage extends StatefulWidget {
   @override
@@ -133,7 +133,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                         'Position': _selectedPosition,
                         'Price': _selectedPrice,
                       };
-                      //printAllPlayers(filters);
+                      printAllPlayers(filters);
                     },
                     child: Text('Search'),
                   ),
@@ -152,7 +152,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
       ),
     );
   }
-  /*
+  
   Future<void> printAllPlayers(Map<String, dynamic> filters) async {
     final DatabaseReference _databaseReference =
         FirebaseDatabase.instance.reference();
@@ -272,5 +272,5 @@ class Player {
     required this.redCards,
     required this.team,
     required this.yellowCards,
-  });*/
+  });
 }

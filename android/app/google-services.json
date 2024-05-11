@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "541882838462",
+    "firebase_url": "https://euro24-631f3-default-rtdb.firebaseio.com",
+    "project_id": "euro24-631f3",
+    "storage_bucket": "euro24-631f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541882838462:android:0adb8d32447c990a545def",
+        "android_client_info": {
+          "package_name": "com.example.euros24fantasy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "541882838462-sq9nvkjmoqddlmq8n6e65uf47hft0dtb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaj7NNYJAjXkTgLqAZhTMie9j8jzbKdqA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "541882838462-sq9nvkjmoqddlmq8n6e65uf47hft0dtb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "541882838462-atomo8oh7kqp7tn8935dgasg4fru9t2v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.euros24fantasy"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541882838462:android:69277489d6a20957545def",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "541882838462-sq9nvkjmoqddlmq8n6e65uf47hft0dtb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaj7NNYJAjXkTgLqAZhTMie9j8jzbKdqA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "541882838462-sq9nvkjmoqddlmq8n6e65uf47hft0dtb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "541882838462-atomo8oh7kqp7tn8935dgasg4fru9t2v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.euros24fantasy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
