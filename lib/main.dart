@@ -1,44 +1,31 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'account_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'main_screen.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:euros24fantasy/account_screen.dart';
+import 'package:euros24fantasy/main_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as htmlParser;
-
 
 void main() async {
   print("In async method");
   WidgetsFlutterBinding.ensureInitialized();
   print("In async method 1");
-  
-
-    void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-
-
- runApp(const MainApp());
-  }
-  /*await Firebase.initializeApp(
+  await Firebase.initializeApp(
     options: FirebaseOptions(
-    apiKey: 'AIzaSyA-LETZlocCknTlGtZhRBzotlHr0tTeOpk',
-    appId: '1:541882838462:ios:200c638ab8f9216a545def',
-    messagingSenderId: '541882838462',
-    projectId: 'euro24-631f3',
-    databaseURL: 'https://euro24-631f3-default-rtdb.firebaseio.com',
-    storageBucket: 'euro24-631f3.appspot.com',
-    iosClientId: '541882838462-s1rpe73i7rlstphp6bv1j9pronpuvobg.apps.googleusercontent.com',
-    iosBundleId: 'com.example.flutterApplication2',
-    )
-  );*/
+        apiKey: "AIzaSyBaj7NNYJAjXkTgLqAZhTMie9j8jzbKdqA",
+        appId: "1:541882838462:android:0adb8d32447c990a545def",
+        messagingSenderId: "541882838462",
+        projectId: "euro24-631f3",
+        authDomain: 'euro24-631f3.firebaseapp.com',
+        databaseURL: 'https://euro24-631f3-default-rtdb.firebaseio.com/',
+        storageBucket: 'euro24-631f3.appspot.com'),
+  );
 
-
-  //runApp(MainApp());
+  print("End async method 1");
+  runApp(MainApp());
   print("End async method 2");
 }
 
