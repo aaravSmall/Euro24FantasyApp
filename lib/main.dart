@@ -14,17 +14,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   print("In async method 1");
   
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-    void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-
-
- runApp(const MainApp());
-  }
-  /*await Firebase.initializeApp(
+    /*await Firebase.initializeApp(
     options: FirebaseOptions(
     apiKey: 'AIzaSyA-LETZlocCknTlGtZhRBzotlHr0tTeOpk',
     appId: '1:541882838462:ios:200c638ab8f9216a545def',
@@ -37,10 +31,9 @@ void main() async {
     )
   );*/
 
-
-  //runApp(MainApp());
-  print("End async method 2");
+  runApp(const MainApp());
 }
+
 
 class Player {
   final String playerName;
@@ -98,6 +91,7 @@ class _MainAppState extends State<MainApp> {
   }
 
   Future<void> fetchData() async {
+    debugPrint('fetchData');
     final url = 'https://www.cnn.com/'; //URL for official Euro site maybe???
     final response = await http.get(Uri.parse(url));
 

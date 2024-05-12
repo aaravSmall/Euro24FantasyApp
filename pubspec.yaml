@@ -1,4 +1,4 @@
-name: flutter_application_2
+name: euros24fantasy
 description: A new Flutter project.
 publish_to: 'none'
 version: 0.1.0
@@ -7,10 +7,7 @@ environment:
   sdk: '>=3.1.5 <4.0.0'
 
 dependencies:
-  firebase_auth: ^4.16.0
-  firebase_core: ^2.24.2
   firebase_database: ^10.4.0
-  firebase_ui_auth: ^1.10.0
   flutter:
     sdk: flutter
   html: ^0.15.4
@@ -19,7 +16,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.2
 
 flutter:
   uses-material-design: true
