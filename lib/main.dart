@@ -74,8 +74,9 @@ class _MainAppState extends State<MainApp> {
           userPoints: userPoints,
           countdown: countdown,
         ), // Placeholder for Home page
-        LeaguesScreen(), // Placeholder for Leagues page
-        AccountScreen(), // Placeholder for Account page
+        LeaguesScreen(),
+        LoginScreen(), // Placeholder for Leagues page
+        // Placeholder for Account page
       ];
 
   @override
@@ -147,15 +148,6 @@ class LeaguesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text('Leagues Screen'),
-    );
-  }
-}
-
-class AccountScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Account Screen'),
     );
   }
 }
