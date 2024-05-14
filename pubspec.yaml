@@ -8,10 +8,13 @@ environment:
 
 dependencies:
   firebase_database: ^10.4.0
+  firebase_ui_auth: ^1.10.0
   flutter:
     sdk: flutter
   html: ^0.15.4
   http: ^1.1.0
+  firebase_ui_auth: ^1.14.0
+  google_sign_in : ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -20,3 +23,4 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
