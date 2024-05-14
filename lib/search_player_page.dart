@@ -54,105 +54,124 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   ];
   final List<String> _positions = ['FW', 'MF', 'DF', 'GK'];
 
+  String truncateText(String text, int maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    } else {
+      return text.substring(0, maxLength) + '...';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              DropdownButtonFormField<String>(
-                value: _selectedNationality.isNotEmpty
-                    ? _selectedNationality
-                    : null,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedNationality = newValue!;
-                  });
-                },
-                items: _nationalities
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  labelText: 'Nationality',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: _selectedPrice.isNotEmpty ? _selectedPrice : null,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedPrice = newValue!;
-                  });
-                },
-                items: _prices.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  labelText: 'Max Price',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: _selectedPosition.isNotEmpty ? _selectedPosition : null,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedPosition = newValue!;
-                  });
-                },
-                items: _positions.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  labelText: 'Position',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Map<String, dynamic> filters = {
-                        'Nationality': _selectedNationality,
-                        'Position': _selectedPosition,
-                        'Price': _selectedPrice,
-                      };
-                      printAllPlayers(filters);
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    isDense: true,
+                    value: _selectedNationality.isNotEmpty
+                        ? _selectedNationality
+                        : null,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedNationality = newValue!;
+                      });
                     },
-                    child: Text('Search'),
+                    items: _nationalities
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(truncateText(value, 15)), // Truncate text if it's too long
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(
+                      labelText: 'Nationality',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(
-                          context); // Navigate back to the previous screen
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    isDense: true,
+                    value: _selectedPrice.isNotEmpty ? _selectedPrice : null,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedPrice = newValue!;
+                      });
                     },
-                    child: Text('Confirm'),
+                    items: _prices.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(
+                      labelText: 'Max Price',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    isDense: true,
+                    value: _selectedPosition.isNotEmpty ? _selectedPosition : null,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedPosition = newValue!;
+                      });
+                    },
+                    items: _positions.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(
+                      labelText: 'Position',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Map<String, dynamic> filters = {
+                      'Nationality': _selectedNationality,
+                      'Position': _selectedPosition,
+                      'Price': _selectedPrice,
+                    };
+                    printAllPlayers(filters);
+                  },
+                  child: Text('Search'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(
+                        context); // Navigate back to the previous screen
+                  },
+                  child: Text('Confirm'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
-  
+
   Future<void> printAllPlayers(Map<String, dynamic> filters) async {
     final DatabaseReference _databaseReference =
         FirebaseDatabase.instance.reference();

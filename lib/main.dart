@@ -11,7 +11,7 @@ import 'package:html/parser.dart' as htmlParser;
 
 void main() async {
   print("In async method");
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); 
   print("In async method 1");
   
   await Firebase.initializeApp(
