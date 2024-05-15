@@ -270,7 +270,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
         );
       },
       child: Container(
-        width: 50,
+        width: 60,
         height: 100,
         color: Colors.blue,
         margin: EdgeInsets.only(bottom: 10),

@@ -14,6 +14,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
   print("In async method 1");
 
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
   /*await Firebase.initializeApp(
     options: FirebaseOptions(
     apiKey: 'AIzaSyA-LETZlocCknTlGtZhRBzotlHr0tTeOpk',
