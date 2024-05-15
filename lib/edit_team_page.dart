@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences package
 import 'search_player_page.dart';
 
 class EditTeamPage extends StatefulWidget {
@@ -7,7 +8,33 @@ class EditTeamPage extends StatefulWidget {
 }
 
 class _EditTeamPageState extends State<EditTeamPage> {
-  String selectedFormation = '4231'; // Default formation
+  late String selectedFormation; // Declare selectedFormation variable
+
+  @override
+@override
+void initState() {
+  super.initState();
+  // Initialize selectedFormation with a default value
+  selectedFormation = '4231';
+  // Load saved formation when the page initializes
+  loadFormation();
+}
+
+
+  // Function to load saved formation from local storage
+  void loadFormation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      // Retrieve saved formation or default to '4231'
+      selectedFormation = prefs.getString('selectedFormation') ?? '4231';
+    });
+  }
+
+  // Function to save selected formation to local storage
+  void saveFormation(String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedFormation', value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +51,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
                   onChanged: (String? newValue) {
                     setState(() {
                       selectedFormation = newValue!;
+                      saveFormation(newValue); // Save selected formation
                     });
                   },
                   items: <String>[
@@ -63,30 +91,31 @@ class _EditTeamPageState extends State<EditTeamPage> {
     );
   }
 
-  List<Widget> buildFormation(String formation) {
-    switch (formation) {
-      case '4231':
-        return build4231();
-      case '442':
-        return buildOtherFormation(4, 4, 2);
-      case '433':
-        return buildOtherFormation(4, 3, 3);
-      case '541':
-        return buildOtherFormation(5, 4, 1);
-      case '532':
-        return buildOtherFormation(5, 3, 2);
-      case '523':
-        return buildOtherFormation(5, 2, 3);
-      case '343':
-        return buildOtherFormation(3, 4, 3);
-      case '352':
-        return buildOtherFormation(3, 5, 2);
-      default:
-        return build4231();
-    }
-  }
 
-  List<Widget> buildOtherFormation(int DF, int MD, int FW) {
+  List<Widget> buildFormation(String formation) {
+  switch (formation) {
+    case '4231':
+      return build4231();
+    case '442':
+      return buildOtherFormation(4, 4, 2);
+    case '433':
+      return buildOtherFormation(4, 3, 3);
+    case '541':
+      return buildOtherFormation(5, 4, 1);
+    case '532':
+      return buildOtherFormation(5, 3, 2);
+    case '523':
+      return buildOtherFormation(5, 2, 3);
+    case '343':
+      return buildOtherFormation(3, 4, 3);
+    case '352':
+      return buildOtherFormation(3, 5, 2);
+    default:
+      return build4231();
+  }
+}
+
+List<Widget> buildOtherFormation(int DF, int MD, int FW) {
   List<Widget> formationWidgets = [];
 
   // Row 1: Goalkeeper
@@ -106,18 +135,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
   formationWidgets.add(
     Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(width: 20),
-       ...List.generate(DF, (index) {
-          return Row(
-            children: [
-              _buildSearchButton(),
-              SizedBox(width: 20),
-            ],
-          );
-        }),
-        SizedBox(width: 20),
-      ],
+      children: _buildPositionRow(DF),
     ),
   );
 
@@ -126,18 +144,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
   formationWidgets.add(
     Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(width: 20),
-       ...List.generate(MD, (index) {
-          return Row(
-            children: [
-              _buildSearchButton(),
-              SizedBox(width: 20),
-            ],
-          );
-        }),
-        SizedBox(width: 20),
-      ],
+      children: _buildPositionRow(MD),
     ),
   );
 
@@ -146,18 +153,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
   formationWidgets.add(
     Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(width: 20),
-       ...List.generate(FW, (index) {
-          return Row(
-            children: [
-              _buildSearchButton(),
-              SizedBox(width: 20),
-            ],
-          );
-        }),
-        SizedBox(width: 20),
-      ],
+      children: _buildPositionRow(FW),
     ),
   );
 
@@ -168,22 +164,33 @@ class _EditTeamPageState extends State<EditTeamPage> {
   formationWidgets.add(
     Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(width: 20),
-       ...List.generate(4, (index) {
-          return Row(
-            children: [
-              _buildSearchButton(),
-              SizedBox(width: 20),
-            ],
-          );
-        }),
-      ],
+      children: _buildPositionRow(4),
     ),
   );
 
   return formationWidgets;
 }
+
+List<Widget> _buildPositionRow(int count) {
+  List<Widget> positionRow = [];
+  double spacing = 10.0;
+  double boxWidth = 50.0;
+  double totalWidth = count * boxWidth + (count - 1) * spacing;
+
+  for (int i = 0; i < count; i++) {
+    positionRow.add(
+      Row(
+        children: [
+          SizedBox(width: i == 0 ? 20 : spacing),
+          _buildSearchButton(),
+          SizedBox(width: i == count - 1 ? 20 : spacing),
+        ],
+      ),
+    );
+  }
+  return positionRow;
+}
+
 
   List<Widget> build4231() {
     return [
