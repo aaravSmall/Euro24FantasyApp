@@ -7,6 +7,8 @@ class EditTeamPage extends StatefulWidget {
 }
 
 class _EditTeamPageState extends State<EditTeamPage> {
+  String selectedFormation = '4231'; // Default formation
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,25 +19,28 @@ class _EditTeamPageState extends State<EditTeamPage> {
             right: 30,
             child: Row(
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Implement the functionality for the first button
+                DropdownButton<String>(
+                  value: selectedFormation,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedFormation = newValue!;
+                    });
                   },
-                  child: Text('Button 1'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    // Implement the functionality for the second button
-                  },
-                  child: Text('Button 2'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    // Implement the functionality for the third button
-                  },
-                  child: Text('Button 3'),
+                  items: <String>[
+                    '4231',
+                    '442',
+                    '433',
+                    '541',
+                    '532',
+                    '523',
+                    '343',
+                    '352'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
                 SizedBox(width: 10),
                 ElevatedButton(
@@ -51,84 +56,210 @@ class _EditTeamPageState extends State<EditTeamPage> {
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                    _buildSearchButton(),
-                    SizedBox(width: 20),
-                  ],
-                ),
-              ],
+              children: buildFormation(selectedFormation),
             ),
           ),
         ],
       ),
     );
+  }
+
+  List<Widget> buildFormation(String formation) {
+    switch (formation) {
+      case '4231':
+        return build4231();
+      case '442':
+        return buildOtherFormation(4, 4, 2);
+      case '433':
+        return buildOtherFormation(4, 3, 3);
+      case '541':
+        return buildOtherFormation(5, 4, 1);
+      case '532':
+        return buildOtherFormation(5, 3, 2);
+      case '523':
+        return buildOtherFormation(5, 2, 3);
+      case '343':
+        return buildOtherFormation(3, 4, 3);
+      case '352':
+        return buildOtherFormation(3, 5, 2);
+      default:
+        return build4231();
+    }
+  }
+
+  List<Widget> buildOtherFormation(int DF, int MD, int FW) {
+    List<Widget> formationWidgets = [];
+
+    // Row 1: Goalkeeper
+    formationWidgets.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+        ],
+      ),
+    );
+
+    // Row 2: Defender Formation
+    formationWidgets.add(SizedBox(height: 20));
+    formationWidgets.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          ...List.generate(DF, (index) {
+            return Row(
+              children: [
+                _buildSearchButton(),
+                SizedBox(width: 20),
+              ],
+            );
+          }),
+          SizedBox(width: 20),
+        ],
+      ),
+    );
+
+    // Row 3: Midfielder Formation
+    formationWidgets.add(SizedBox(height: 20));
+    formationWidgets.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          ...List.generate(MD, (index) {
+            return Row(
+              children: [
+                _buildSearchButton(),
+                SizedBox(width: 20),
+              ],
+            );
+          }),
+          SizedBox(width: 20),
+        ],
+      ),
+    );
+
+    // Row 4: Forward Formation
+    formationWidgets.add(SizedBox(height: 20));
+    formationWidgets.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          ...List.generate(FW, (index) {
+            return Row(
+              children: [
+                _buildSearchButton(),
+                SizedBox(width: 20),
+              ],
+            );
+          }),
+          SizedBox(width: 20),
+        ],
+      ),
+    );
+
+    // Add a 100px space between the forward row and the sub bench row
+    formationWidgets.add(SizedBox(height: 100));
+
+    // Sub Bench Formation
+    formationWidgets.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          ...List.generate(4, (index) {
+            return Row(
+              children: [
+                _buildSearchButton(),
+                SizedBox(width: 20),
+              ],
+            );
+          }),
+        ],
+      ),
+    );
+
+    return formationWidgets;
+  }
+
+  List<Widget> build4231() {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+        ],
+      ), //GK
+      SizedBox(height: 20),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+        ],
+      ), //Defenders
+      SizedBox(height: 20),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+        ],
+      ), // Midfielders
+      SizedBox(height: 20),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+        ],
+      ), // Attackers/midfields Midfielders
+      SizedBox(height: 20),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+        ], // Attackers
+      ),
+      SizedBox(height: 20),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+          _buildSearchButton(),
+          SizedBox(width: 20),
+        ],
+      ),
+    ];
   }
 
   Widget _buildSearchButton() {
@@ -140,9 +271,10 @@ class _EditTeamPageState extends State<EditTeamPage> {
         );
       },
       child: Container(
-        width: 80,
+        width: 50,
         height: 100,
         color: Colors.blue,
+        margin: EdgeInsets.only(bottom: 10),
         child: Center(
           child: Text(
             '+',

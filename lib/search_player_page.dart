@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class SearchPlayerPage extends StatefulWidget {
+  final ValueChanged<String>? onPlayerSelected;
+
+  SearchPlayerPage({Key? key, this.onPlayerSelected}) : super(key: key);
+
   @override
   _SearchPlayerPageState createState() => _SearchPlayerPageState();
 }
@@ -53,6 +57,15 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     '4.5'
   ];
   final List<String> _positions = ['FW', 'MF', 'DF', 'GK'];
+
+  List<Map<String, dynamic>> _players = [];
+  List<bool> _isSelected = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _isSelected = List<bool>.filled(_players.length, false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,18 +152,65 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(
-                          context); // Navigate back to the previous screen
+                      _confirmSelection(context);
                     },
                     child: Text('Confirm'),
                   ),
                 ],
+              ),
+              SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _players.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_players[index]['Player']),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Position: ${_players[index]['Position']}'),
+                          Text('Goals: ${_players[index]['Goals']}'),
+                          Text('Assists: ${_players[index]['Assists']}'),
+                          Text(
+                              'Clean sheets: ${_players[index]['Clean sheets']}'),
+                          Text('Points: ${_players[index]['Points']}'),
+                          Text('Price: ${_players[index]['Price']}'),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        icon:
+                            Icon(_isSelected[index] ? Icons.check : Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            _isSelected[index] = !_isSelected[index];
+                          });
+                        },
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _isSelected[index] = !_isSelected[index];
+                        });
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _confirmSelection(BuildContext context) {
+    List<String> selectedPlayers = [];
+    for (int i = 0; i < _players.length; i++) {
+      if (_isSelected[i]) {
+        selectedPlayers.add(_players[i]['Player']);
+      }
+    }
+    widget.onPlayerSelected?.call(selectedPlayers.join(", "));
+    Navigator.pop(context);
   }
 
   Future<void> printAllPlayers(Map<String, dynamic> filters) async {
@@ -175,41 +235,48 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
       query = _databaseReference;
     }
 
-    query.onValue.listen((event) {
+    query.once().then((event) {
       final snapshot = event.snapshot;
       if (snapshot.value != null) {
-        print("Players:");
         if (snapshot.value is Map<dynamic, dynamic>) {
           final data = snapshot.value as Map<dynamic, dynamic>;
+          _players.clear();
           data.forEach((key, value) {
             if (filters.containsKey('Nationality') &&
                 filters.containsKey('Position')) {
               if (value['Position'] == filters['Position']) {
                 if (double.parse(value['Price']) <=
                     double.parse(filters['Price'])) {
-                  print("Player Name: ${value['Player']}");
-                  print("Position: ${value['Position']}");
-                  print("Goals: ${value['Goals']}");
-                  print("Assists: ${value['Assists']}");
-                  print("Clean sheets: ${value['Clean sheets']}");
-                  print("Points: ${value['Points']}");
-                  print("Price: ${value['Price']}");
-                  print("-------------------");
+                  _players.add({
+                    'Player': value['Player'],
+                    'Position': value['Position'],
+                    'Goals': value['Goals'],
+                    'Assists': value['Assists'],
+                    'Clean sheets': value['Clean sheets'],
+                    'Points': value['Points'],
+                    'Price': value['Price']
+                  });
                 }
               }
             } else {
               if (double.parse(value['Price']) <=
                   double.parse(filters['Price'])) {
-                print("Player Name: ${value['Player']}");
-                print("Position: ${value['Position']}");
-                print("Goals: ${value['Goals']}");
-                print("Price: ${value['Price']}");
-                print("-------------------");
+                _players.add({
+                  'Player': value['Player'],
+                  'Position': value['Position'],
+                  'Goals': value['Goals'],
+                  'Price': value['Price']
+                });
               }
             }
           });
+          setState(() {
+            _isSelected = List<bool>.filled(_players.length, false);
+          });
         } else if (snapshot.value is List<dynamic>) {
-          (snapshot.value as List<dynamic>).forEach((player) {
+          final data = snapshot.value as List<dynamic>;
+          _players.clear();
+          data.forEach((player) {
             if (player is Map<dynamic, dynamic>) {
               final playerMap = player as Map<dynamic, dynamic>;
               if (filters.containsKey('Nationality') &&
@@ -217,34 +284,112 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                 if (playerMap['Position'] == filters['Position']) {
                   if (double.parse(playerMap['Price']) <=
                       double.parse(filters['Price'])) {
-                    print("Player Name: ${playerMap['Player']}");
-                    print("Position: ${playerMap['Position']}");
-                    print("Goals: ${playerMap['Goals']}");
-                    print("Assists: ${playerMap['Assists']}");
-                    print("Clean sheets: ${playerMap['Clean sheets']}");
-                    print("Points: ${playerMap['Points']}");
-                    print("Price: ${playerMap['Price']}");
-                    print("-------------------");
+                    _players.add({
+                      'Player': playerMap['Player'],
+                      'Position': playerMap['Position'],
+                      'Goals': playerMap['Goals'],
+                      'Assists': playerMap['Assists'],
+                      'Clean sheets': playerMap['Clean sheets'],
+                      'Points': playerMap['Points'],
+                      'Price': playerMap['Price']
+                    });
                   }
                 }
               } else {
                 if (double.parse(playerMap['Price']) <=
                     double.parse(filters['Price'])) {
-                  print("Player Name: ${playerMap['Player']}");
-                  print("Position: ${playerMap['Position']}");
-                  print("Goals: ${playerMap['Goals']}");
-                  print("Price: ${playerMap['Price']}");
-                  print("-------------------");
+                  _players.add({
+                    'Player': playerMap['Player'],
+                    'Position': playerMap['Position'],
+                    'Goals': playerMap['Goals'],
+                    'Price': playerMap['Price']
+                  });
                 }
               }
             }
+          });
+          setState(() {
+            _isSelected = List<bool>.filled(_players.length, false);
           });
         }
       } else {
         print("No players available.");
       }
-    }, onError: (error) {
+    }).catchError((error) {
       print("Error retrieving data: $error");
     });
   }
+}
+
+class LineupScreen extends StatefulWidget {
+  final List<String> selectedPlayers;
+
+  const LineupScreen({Key? key, required this.selectedPlayers})
+      : super(key: key);
+
+  @override
+  _LineupScreenState createState() => _LineupScreenState();
+}
+
+class _LineupScreenState extends State<LineupScreen> {
+  Map<String, String> _lineup = {
+    'GK': 'GK', // Replace with default values
+    'DF1': 'DF',
+    'DF2': 'DF',
+    'DF3': 'DF',
+    'DF4': 'DF',
+    'MF1': 'MF',
+    'MF2': 'MF',
+    'MF3': 'MF',
+    'FW1': 'FW',
+    'FW2': 'FW',
+    'Sub1': 'Substitute',
+    'Sub2': 'Substitute',
+    'Sub3': 'Substitute',
+    'Sub4': 'Substitute',
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Selected Players'),
+      ),
+      body: ListView.builder(
+        itemCount: _lineup.length,
+        itemBuilder: (context, index) {
+          String position = _lineup.keys.elementAt(index);
+          return ListTile(
+            title: Text(position),
+            subtitle: Text(_lineup[position] != position
+                ? _lineup[position]!
+                : 'No player selected'),
+            onTap: () {
+              _selectPlayer(context, position);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  void _selectPlayer(BuildContext context, String position) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SearchPlayerPage(),
+      ),
+    );
+    if (result != null && result is String) {
+      setState(() {
+        _lineup[position] = result;
+      });
+    }
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: SearchPlayerPage(),
+  ));
 }
