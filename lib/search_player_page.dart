@@ -16,6 +16,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   String _selectedPosition = '';
 
   final List<String> _nationalities = [
+    'Any', // Display "Any" in the dropdown
     'Scotland',
     'Switzerland',
     'Spain',
@@ -43,6 +44,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   ];
 
   final List<String> _prices = [
+    'Any', // Display "Any" in the dropdown
     '10.0',
     '9.5',
     '9.0',
@@ -56,7 +58,13 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     '5.0',
     '4.5'
   ];
-  final List<String> _positions = ['FW', 'MF', 'DF', 'GK'];
+  final List<String> _positions = [
+    'Any', // Display "Any" in the dropdown
+    'FW',
+    'MF',
+    'DF',
+    'GK'
+  ];
 
   List<Map<String, dynamic>> _players = [];
   List<bool> _isSelected = [];
@@ -88,7 +96,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                 items: _nationalities
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
-                    value: value,
+                    value: value == 'Any' ? '' : value, // Pass empty string if "Any" is selected
                     child: Text(value),
                   );
                 }).toList(),
@@ -107,7 +115,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                 },
                 items: _prices.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
-                    value: value,
+                    value: value == 'Any' ? '' : value, // Pass empty string if "Any" is selected
                     child: Text(value),
                   );
                 }).toList(),
@@ -126,7 +134,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                 },
                 items: _positions.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
-                    value: value,
+                    value: value == 'Any' ? '' : value, // Pass empty string if "Any" is selected
                     child: Text(value),
                   );
                 }).toList(),
