@@ -14,14 +14,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
   print("In async method 1");
 
-  void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-
-    runApp(const MainApp());
-  }
   /*await Firebase.initializeApp(
     options: FirebaseOptions(
     apiKey: 'AIzaSyA-LETZlocCknTlGtZhRBzotlHr0tTeOpk',
@@ -35,7 +27,7 @@ void main() async {
     )
   );*/
 
-  //runApp(MainApp());
+  runApp(MainApp());
   print("End async method 2");
 }
 
