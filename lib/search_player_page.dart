@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+// ...
+
 class SearchPlayerPage extends StatefulWidget {
   final ValueChanged<String>? onPlayerSelected;
 
@@ -58,6 +60,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     '5.0',
     '4.5'
   ];
+
   final List<String> _positions = [
     'Any', // Display "Any" in the dropdown
     'FW',
@@ -96,7 +99,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                 items: _nationalities
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
-                    value: value == 'Any' ? '' : value, // Pass empty string if "Any" is selected
+                    value: value,
                     child: Text(value),
                   );
                 }).toList(),
@@ -115,7 +118,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                 },
                 items: _prices.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
-                    value: value == 'Any' ? '' : value, // Pass empty string if "Any" is selected
+                    value: value,
                     child: Text(value),
                   );
                 }).toList(),
@@ -134,7 +137,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                 },
                 items: _positions.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
-                    value: value == 'Any' ? '' : value, // Pass empty string if "Any" is selected
+                    value: value,
                     child: Text(value),
                   );
                 }).toList(),
@@ -284,35 +287,32 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
         } else if (snapshot.value is List<dynamic>) {
           final data = snapshot.value as List<dynamic>;
           _players.clear();
-          data.forEach((player) {
-            if (player is Map<dynamic, dynamic>) {
-              final playerMap = player as Map<dynamic, dynamic>;
-              if (filters.containsKey('Nationality') &&
-                  filters.containsKey('Position')) {
-                if (playerMap['Position'] == filters['Position']) {
-                  if (double.parse(playerMap['Price']) <=
-                      double.parse(filters['Price'])) {
-                    _players.add({
-                      'Player': playerMap['Player'],
-                      'Position': playerMap['Position'],
-                      'Goals': playerMap['Goals'],
-                      'Assists': playerMap['Assists'],
-                      'Clean sheets': playerMap['Clean sheets'],
-                      'Points': playerMap['Points'],
-                      'Price': playerMap['Price']
-                    });
-                  }
-                }
-              } else {
+          data.forEach((playerMap) {
+            if (filters.containsKey('Nationality') &&
+                filters.containsKey('Position')) {
+              if (playerMap['Position'] == filters['Position']) {
                 if (double.parse(playerMap['Price']) <=
                     double.parse(filters['Price'])) {
                   _players.add({
                     'Player': playerMap['Player'],
                     'Position': playerMap['Position'],
                     'Goals': playerMap['Goals'],
+                    'Assists': playerMap['Assists'],
+                    'Clean sheets': playerMap['Clean sheets'],
+                    'Points': playerMap['Points'],
                     'Price': playerMap['Price']
                   });
                 }
+              }
+            } else {
+              if (double.parse(playerMap['Price']) <=
+                  double.parse(filters['Price'])) {
+                _players.add({
+                  'Player': playerMap['Player'],
+                  'Position': playerMap['Position'],
+                  'Goals': playerMap['Goals'],
+                  'Price': playerMap['Price']
+                });
               }
             }
           });
