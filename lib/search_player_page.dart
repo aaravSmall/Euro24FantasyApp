@@ -58,15 +58,6 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   ];
   final List<String> _positions = ['FW', 'MF', 'DF', 'GK'];
 
-  List<Map<String, dynamic>> _players = [];
-  List<bool> _isSelected = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _isSelected = List<bool>.filled(_players.length, false);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,43 +149,6 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _players.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(_players[index]['Player']),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Position: ${_players[index]['Position']}'),
-                          Text('Goals: ${_players[index]['Goals']}'),
-                          Text('Assists: ${_players[index]['Assists']}'),
-                          Text(
-                              'Clean sheets: ${_players[index]['Clean sheets']}'),
-                          Text('Points: ${_players[index]['Points']}'),
-                          Text('Price: ${_players[index]['Price']}'),
-                        ],
-                      ),
-                      trailing: IconButton(
-                        icon:
-                            Icon(_isSelected[index] ? Icons.check : Icons.add),
-                        onPressed: () {
-                          setState(() {
-                            _isSelected[index] = !_isSelected[index];
-                          });
-                        },
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _isSelected[index] = !_isSelected[index];
-                        });
-                      },
-                    );
-                  },
-                ),
-              ),
             ],
           ),
         ),
@@ -211,6 +165,15 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     }
     widget.onPlayerSelected?.call(selectedPlayers.join(", "));
     Navigator.pop(context);
+  }
+
+  List<Map<String, dynamic>> _players = [];
+  List<bool> _isSelected = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _isSelected = List<bool>.filled(_players.length, false);
   }
 
   Future<void> printAllPlayers(Map<String, dynamic> filters) async {

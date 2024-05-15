@@ -10,14 +10,19 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as htmlParser;
 
 void main() async {
+  print("In async method");
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  print("In async method 1");
 
-  runApp(const MainApp());
-}
-/*await Firebase.initializeApp(
+  void main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    runApp(const MainApp());
+  }
+  /*await Firebase.initializeApp(
     options: FirebaseOptions(
     apiKey: 'AIzaSyA-LETZlocCknTlGtZhRBzotlHr0tTeOpk',
     appId: '1:541882838462:ios:200c638ab8f9216a545def',
@@ -30,7 +35,9 @@ void main() async {
     )
   );*/
 
-//runApp(MainApp());
+  //runApp(MainApp());
+  print("End async method 2");
+}
 
 class Player {
   final String playerName;
