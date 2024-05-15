@@ -58,6 +58,15 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   ];
   final List<String> _positions = ['FW', 'MF', 'DF', 'GK'];
 
+  List<Map<String, dynamic>> _players = [];
+  List<bool> _isSelected = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _isSelected = List<bool>.filled(_players.length, false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,6 +158,43 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                   ),
                 ],
               ),
+              SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _players.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_players[index]['Player']),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Position: ${_players[index]['Position']}'),
+                          Text('Goals: ${_players[index]['Goals']}'),
+                          Text('Assists: ${_players[index]['Assists']}'),
+                          Text(
+                              'Clean sheets: ${_players[index]['Clean sheets']}'),
+                          Text('Points: ${_players[index]['Points']}'),
+                          Text('Price: ${_players[index]['Price']}'),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        icon:
+                            Icon(_isSelected[index] ? Icons.check : Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            _isSelected[index] = !_isSelected[index];
+                          });
+                        },
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _isSelected[index] = !_isSelected[index];
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -165,15 +211,6 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     }
     widget.onPlayerSelected?.call(selectedPlayers.join(", "));
     Navigator.pop(context);
-  }
-
-  List<Map<String, dynamic>> _players = [];
-  List<bool> _isSelected = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _isSelected = List<bool>.filled(_players.length, false);
   }
 
   Future<void> printAllPlayers(Map<String, dynamic> filters) async {
@@ -284,33 +321,11 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   }
 }
 
-class LineupScreen extends StatefulWidget {
+class LineupScreen extends StatelessWidget {
   final List<String> selectedPlayers;
 
   const LineupScreen({Key? key, required this.selectedPlayers})
       : super(key: key);
-
-  @override
-  _LineupScreenState createState() => _LineupScreenState();
-}
-
-class _LineupScreenState extends State<LineupScreen> {
-  Map<String, String> _lineup = {
-    'GK': 'GK', // Replace with default values
-    'DF1': 'DF',
-    'DF2': 'DF',
-    'DF3': 'DF',
-    'DF4': 'DF',
-    'MF1': 'MF',
-    'MF2': 'MF',
-    'MF3': 'MF',
-    'FW1': 'FW',
-    'FW2': 'FW',
-    'Sub1': 'Substitute',
-    'Sub2': 'Substitute',
-    'Sub3': 'Substitute',
-    'Sub4': 'Substitute',
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -319,35 +334,14 @@ class _LineupScreenState extends State<LineupScreen> {
         title: Text('Selected Players'),
       ),
       body: ListView.builder(
-        itemCount: _lineup.length,
+        itemCount: selectedPlayers.length,
         itemBuilder: (context, index) {
-          String position = _lineup.keys.elementAt(index);
           return ListTile(
-            title: Text(position),
-            subtitle: Text(_lineup[position] != position
-                ? _lineup[position]!
-                : 'No player selected'),
-            onTap: () {
-              _selectPlayer(context, position);
-            },
+            title: Text(selectedPlayers[index]),
           );
         },
       ),
     );
-  }
-
-  void _selectPlayer(BuildContext context, String position) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SearchPlayerPage(),
-      ),
-    );
-    if (result != null && result is String) {
-      setState(() {
-        _lineup[position] = result;
-      });
-    }
   }
 }
 
