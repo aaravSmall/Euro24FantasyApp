@@ -10,13 +10,42 @@ class MoreMatchesPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: 10, // Change this to the number of matches you want to display
         itemBuilder: (context, index) {
-          // You can customize this ListTile to display match details
+          // You can customize this widget to display match details
           return ListTile(
-            title: Text('Match ${index + 1}'),
-            subtitle: Text('Details of the match'),
-            onTap: () {
-              // Add functionality if you want to handle tapping on a match
-            },
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Images
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Image.network(
+                      'https://via.placeholder.com/200',
+                      width: 100,
+                      height: 100,
+                    ),
+                    Image.network(
+                      'https://via.placeholder.com/200',
+                      width: 100,
+                      height: 100,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10), // Adjust spacing between images and scores
+                // Scores and "more" text
+                Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('Home: 2 - Away: 1'), 
+                      // "More" text
+                      SizedBox(height: 5), // Adjust spacing between scores and "more" text
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            onTap: () {},
           );
         },
       ),
