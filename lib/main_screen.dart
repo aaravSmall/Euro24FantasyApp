@@ -1,4 +1,5 @@
 import 'edit_team_page.dart';
+import 'more_matches_page.dart'; 
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatelessWidget {
@@ -90,15 +91,20 @@ class MainScreen extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 0),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 30,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey,
-                ),
-                child: Center(
-                  child: Text('More Matches'),
+              InkWell(
+                onTap: () {
+                  _navigateToMoreMatches(context);
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey,
+                  ),
+                  child: Center(
+                    child: Text('More Matches'),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -148,6 +154,13 @@ class MainScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  void _navigateToMoreMatches(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MoreMatchesPage()),
     );
   }
 }

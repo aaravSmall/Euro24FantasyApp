@@ -124,7 +124,7 @@ List<Widget> buildOtherFormation(int DF, int MD, int FW) {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(width: 20),
-        _buildSearchButton(),
+        _buildSearchButton('GK'),
         SizedBox(width: 20),
       ],
     ),
@@ -135,7 +135,7 @@ List<Widget> buildOtherFormation(int DF, int MD, int FW) {
   formationWidgets.add(
     Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: _buildPositionRow(DF),
+      children: _buildPositionRow(DF, "DF"),
     ),
   );
 
@@ -144,7 +144,7 @@ List<Widget> buildOtherFormation(int DF, int MD, int FW) {
   formationWidgets.add(
     Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: _buildPositionRow(MD),
+      children: _buildPositionRow(MD, "MF"),
     ),
   );
 
@@ -153,7 +153,7 @@ List<Widget> buildOtherFormation(int DF, int MD, int FW) {
   formationWidgets.add(
     Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: _buildPositionRow(FW),
+      children: _buildPositionRow(FW, "FW"),
     ),
   );
 
@@ -164,14 +164,14 @@ List<Widget> buildOtherFormation(int DF, int MD, int FW) {
   formationWidgets.add(
     Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: _buildPositionRow(4),
+      children: _buildPositionRow(4, "SUB"),
     ),
   );
 
   return formationWidgets;
 }
 
-List<Widget> _buildPositionRow(int count) {
+List<Widget> _buildPositionRow(int count, String pos) {
   List<Widget> positionRow = [];
   double spacing = 10.0;
   double boxWidth = 50.0;
@@ -182,7 +182,7 @@ List<Widget> _buildPositionRow(int count) {
       Row(
         children: [
           SizedBox(width: i == 0 ? 20 : spacing),
-          _buildSearchButton(),
+          _buildSearchButton(pos),
           SizedBox(width: i == count - 1 ? 20 : spacing),
         ],
       ),
@@ -198,7 +198,7 @@ List<Widget> _buildPositionRow(int count) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('GK'),
           SizedBox(width: 20),
         ],
       ), //GK
@@ -207,13 +207,13 @@ List<Widget> _buildPositionRow(int count) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('DF'),
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('DF'),
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('DF'),
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('DF'),
           SizedBox(width: 20),
         ],
       ), //Defenders
@@ -222,9 +222,9 @@ List<Widget> _buildPositionRow(int count) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('MF'),
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('MF'),
           SizedBox(width: 20),
         ],
       ), // Midfielders
@@ -233,11 +233,11 @@ List<Widget> _buildPositionRow(int count) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('MD'),
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('MD'),
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('MD'),
           SizedBox(width: 20),
         ],
       ), // Attackers/midfields Midfielders
@@ -246,7 +246,7 @@ List<Widget> _buildPositionRow(int count) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton('FW'),
           SizedBox(width: 20),
         ], // Attackers
       ),
@@ -255,25 +255,27 @@ List<Widget> _buildPositionRow(int count) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton("SUB"),
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton("SUB"),
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton("SUB"),
           SizedBox(width: 20),
-          _buildSearchButton(),
+          _buildSearchButton("SUB"),
           SizedBox(width: 20),
         ],
       ),
     ];
   }
 
-  Widget _buildSearchButton() {
+  Widget _buildSearchButton(String positionSelected) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SearchPlayerPage()),
+          MaterialPageRoute(
+            builder: (context) => SearchPlayerPage(positionSelected: positionSelected),
+          ),
         );
       },
       child: Container(
@@ -290,4 +292,5 @@ List<Widget> _buildPositionRow(int count) {
       ),
     );
   }
+
 }
