@@ -7,6 +7,7 @@ class SearchPlayerPage extends StatefulWidget {
   final String positionSelected;
 
   SearchPlayerPage({Key? key, this.onPlayerSelected, required this.positionSelected}) : super(key: key);
+  
 
   @override
   _SearchPlayerPageState createState() => _SearchPlayerPageState();
