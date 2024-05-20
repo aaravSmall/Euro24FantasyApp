@@ -85,7 +85,7 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    fetchData();
+    //fetchData();
   }
 
   Future<void> fetchData() async {

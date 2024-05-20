@@ -112,6 +112,8 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Email',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.email),
               ),
             ),
             SizedBox(height: 20.0),
@@ -120,6 +122,8 @@ class _LoginScreenState extends State<LoginScreen> {
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock),
               ),
             ),
             SizedBox(height: 20.0),
@@ -134,19 +138,22 @@ class _LoginScreenState extends State<LoginScreen> {
             else
               Column(
                 children: [
-                  ElevatedButton(
+                  ElevatedButton.icon(
                     onPressed: _login,
-                    child: Text('Login'),
+                    icon: Icon(Icons.login),
+                    label: Text('Login'),
                   ),
                   SizedBox(height: 10.0),
-                  ElevatedButton(
+                  ElevatedButton.icon(
                     onPressed: _register,
-                    child: Text('Register'),
+                    icon: Icon(Icons.person_add),
+                    label: Text('Register'),
                   ),
                   SizedBox(height: 10.0),
-                  ElevatedButton(
+                  OutlinedButton.icon(
                     onPressed: _signInWithGoogle,
-                    child: Text('Sign in with Google'),
+                    icon: Icon(Icons.golf_course),
+                    label: Text('Sign in with Google'),
                   ),
                 ],
               ),
