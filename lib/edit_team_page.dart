@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'search_player_page.dart';
 
 class EditTeamPage extends StatefulWidget {
@@ -8,18 +8,17 @@ class EditTeamPage extends StatefulWidget {
 }
 
 class _EditTeamPageState extends State<EditTeamPage> {
-  late String selectedFormation; 
+  late String selectedFormation;
 
   @override
-@override
-void initState() {
-  super.initState();
-  // Initialize selectedFormation with a default value
-  selectedFormation = '4231';
-  // Load saved formation when the page initializes
-  loadFormation();
-}
-
+  @override
+  void initState() {
+    super.initState();
+    // Initialize selectedFormation with a default value
+    selectedFormation = '4231';
+    // Load saved formation when the page initializes
+    loadFormation();
+  }
 
   // Function to load saved formation from local storage
   void loadFormation() async {
@@ -73,7 +72,8 @@ void initState() {
                 SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Navigate back to the previous screen
+                    Navigator.pop(
+                        context); // Navigate back to the previous screen
                   },
                   child: Text('Confirm'),
                 ),
@@ -91,106 +91,104 @@ void initState() {
     );
   }
 
-
   List<Widget> buildFormation(String formation) {
-  switch (formation) {
-    case '4231':
-      return build4231();
-    case '442':
-      return buildOtherFormation(4, 4, 2);
-    case '433':
-      return buildOtherFormation(4, 3, 3);
-    case '541':
-      return buildOtherFormation(5, 4, 1);
-    case '532':
-      return buildOtherFormation(5, 3, 2);
-    case '523':
-      return buildOtherFormation(5, 2, 3);
-    case '343':
-      return buildOtherFormation(3, 4, 3);
-    case '352':
-      return buildOtherFormation(3, 5, 2);
-    default:
-      return build4231();
+    switch (formation) {
+      case '4231':
+        return build4231();
+      case '442':
+        return buildOtherFormation(4, 4, 2);
+      case '433':
+        return buildOtherFormation(4, 3, 3);
+      case '541':
+        return buildOtherFormation(5, 4, 1);
+      case '532':
+        return buildOtherFormation(5, 3, 2);
+      case '523':
+        return buildOtherFormation(5, 2, 3);
+      case '343':
+        return buildOtherFormation(3, 4, 3);
+      case '352':
+        return buildOtherFormation(3, 5, 2);
+      default:
+        return build4231();
+    }
   }
-}
 
-List<Widget> buildOtherFormation(int DF, int MD, int FW) {
-  List<Widget> formationWidgets = [];
+  List<Widget> buildOtherFormation(int DF, int MD, int FW) {
+    List<Widget> formationWidgets = [];
 
-  // Row 1: Goalkeeper
-  formationWidgets.add(
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(width: 20),
-        _buildSearchButton('GK'),
-        SizedBox(width: 20),
-      ],
-    ),
-  );
-
-  // Row 2: Defender Formation
-  formationWidgets.add(SizedBox(height: 20));
-  formationWidgets.add(
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: _buildPositionRow(DF, "DF"),
-    ),
-  );
-
-  // Row 3: Midfielder Formation
-  formationWidgets.add(SizedBox(height: 20));
-  formationWidgets.add(
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: _buildPositionRow(MD, "MF"),
-    ),
-  );
-
-  // Row 4: Forward Formation
-  formationWidgets.add(SizedBox(height: 20));
-  formationWidgets.add(
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: _buildPositionRow(FW, "FW"),
-    ),
-  );
-
-  // Add a 100px space between the forward row and the sub bench row
-  formationWidgets.add(SizedBox(height: 100));
-
-  // Sub Bench Formation
-  formationWidgets.add(
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: _buildPositionRow(4, "SUB"),
-    ),
-  );
-
-  return formationWidgets;
-}
-
-List<Widget> _buildPositionRow(int count, String pos) {
-  List<Widget> positionRow = [];
-  double spacing = 10.0;
-  double boxWidth = 50.0;
-  double totalWidth = count * boxWidth + (count - 1) * spacing;
-
-  for (int i = 0; i < count; i++) {
-    positionRow.add(
+    // Row 1: Goalkeeper
+    formationWidgets.add(
       Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(width: i == 0 ? 20 : spacing),
-          _buildSearchButton(pos),
-          SizedBox(width: i == count - 1 ? 20 : spacing),
+          SizedBox(width: 20),
+          _buildSearchButton('GK'),
+          SizedBox(width: 20),
         ],
       ),
     );
-  }
-  return positionRow;
-}
 
+    // Row 2: Defender Formation
+    formationWidgets.add(SizedBox(height: 20));
+    formationWidgets.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _buildPositionRow(DF, "DF"),
+      ),
+    );
+
+    // Row 3: Midfielder Formation
+    formationWidgets.add(SizedBox(height: 20));
+    formationWidgets.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _buildPositionRow(MD, "MF"),
+      ),
+    );
+
+    // Row 4: Forward Formation
+    formationWidgets.add(SizedBox(height: 20));
+    formationWidgets.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _buildPositionRow(FW, "FW"),
+      ),
+    );
+
+    // Add a 100px space between the forward row and the sub bench row
+    formationWidgets.add(SizedBox(height: 100));
+
+    // Sub Bench Formation
+    formationWidgets.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _buildPositionRow(4, "SUB"),
+      ),
+    );
+
+    return formationWidgets;
+  }
+
+  List<Widget> _buildPositionRow(int count, String pos) {
+    List<Widget> positionRow = [];
+    double spacing = 10.0;
+    double boxWidth = 50.0;
+    double totalWidth = count * boxWidth + (count - 1) * spacing;
+
+    for (int i = 0; i < count; i++) {
+      positionRow.add(
+        Row(
+          children: [
+            SizedBox(width: i == 0 ? 20 : spacing),
+            _buildSearchButton(pos),
+            SizedBox(width: i == count - 1 ? 20 : spacing),
+          ],
+        ),
+      );
+    }
+    return positionRow;
+  }
 
   List<Widget> build4231() {
     return [
@@ -274,7 +272,8 @@ List<Widget> _buildPositionRow(int count, String pos) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SearchPlayerPage(positionSelected: positionSelected),
+            builder: (context) =>
+                SearchPlayerPage(positionSelected: positionSelected),
           ),
         );
       },
@@ -292,5 +291,4 @@ List<Widget> _buildPositionRow(int count, String pos) {
       ),
     );
   }
-
 }
