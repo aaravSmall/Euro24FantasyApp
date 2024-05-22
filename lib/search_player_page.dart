@@ -15,8 +15,8 @@ class SearchPlayerPage extends StatefulWidget {
 }
 
 class _SearchPlayerPageState extends State<SearchPlayerPage> {
-  String _selectedNationality = 'Scotland'; // Default to the first option
-  String _selectedPrice = '10.0'; // Default to the first option
+  String _selectedNationality = 'Any';
+  String _selectedPrice = '10.0';
   String _selectedPosition = '';
 
   final List<String> _nationalities = [
@@ -63,6 +63,15 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     '4.5'
   ];
 
+  final List<String> _positions = [
+    'FW',
+    'DF',
+    'MF',
+    'GK',
+  ];
+
+  List<bool> _isSelectedPosition = [];
+
   List<Player> _players = [];
   List<Player> _filteredPlayers = [];
   List<bool> _isSelected = [];
@@ -71,7 +80,9 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   void initState() {
     super.initState();
     _selectedPosition = widget.positionSelected;
+    _isSelectedPosition = List<bool>.filled(_positions.length, false);
     _searchPlayers();
+    _filteredPlayers = _players; // Initialize _filteredPlayers with _players
   }
 
   @override
@@ -195,7 +206,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     Navigator.pop(context);
   }
 
-  Future<void> _searchPlayers() async {
+  void _searchPlayers() async {
     final DatabaseReference _databaseReference =
         FirebaseDatabase.instance.reference();
 
@@ -204,13 +215,14 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
       final snapshot = event.snapshot;
 
       if (snapshot.value != null) {
-        final data = snapshot.value as List<dynamic>;
+        final data = snapshot.value as Map<dynamic, dynamic>;
+        final List<dynamic> playersData = data.values.toList();
 
         // Debug: Log the entire data fetched from Firebase
-        print("Data fetched from Firebase: $data");
+        print("Data fetched from Firebase: $playersData");
 
         _players.clear();
-        for (var item in data) {
+        for (var item in playersData) {
           if (item is Map<dynamic, dynamic>) {
             _players.add(Player(
               playerName: item['Player'],
