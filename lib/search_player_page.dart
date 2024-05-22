@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'player.dart'; // Importing Player class from player.dart
 
@@ -220,7 +220,6 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
 
         // Debug: Log the entire data fetched from Firebase
         print("Data fetched from Firebase: $playersData");
-        //commit
 
         _players.clear();
         for (var item in playersData) {
