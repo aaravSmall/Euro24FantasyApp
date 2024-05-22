@@ -8,7 +8,7 @@ class EditTeamPage extends StatefulWidget {
 }
 
 class _EditTeamPageState extends State<EditTeamPage> {
-  late String selectedFormation;
+  late String selectedFormation = '4231';
 
   @override
   @override
