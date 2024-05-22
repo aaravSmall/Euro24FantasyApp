@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -26,6 +27,18 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+
+      User? user = userCredential.user;
+
+      if (user != null) {
+        final formation = '4231';
+        final database = FirebaseDatabase.instance.reference();
+        database
+            .child('users')
+            .child(user.uid)
+            .child('formation')
+            .set(formation);
+      }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Login successful!'),
       ));
