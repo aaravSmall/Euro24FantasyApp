@@ -220,6 +220,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
 
         // Debug: Log the entire data fetched from Firebase
         print("Data fetched from Firebase: $playersData");
+        //commit
 
         _players.clear();
         for (var item in playersData) {
