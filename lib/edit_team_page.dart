@@ -11,14 +11,11 @@ class _EditTeamPageState extends State<EditTeamPage> {
   late String selectedFormation;
 
   @override
-  @override
   void initState() {
     super.initState();
-    final
-        // Initialize selectedFormation with a default value
-        selectedFormation = '4231';
-    // Load saved formation when the page initializes
-    loadFormation();
+    selectedFormation =
+        '4231'; // Initialize selectedFormation with a default value
+    loadFormation(); // Load saved formation when the page initializes
   }
 
   // Function to load saved formation from local storage
@@ -39,55 +36,57 @@ class _EditTeamPageState extends State<EditTeamPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned(
-            top: 70,
-            right: 30,
-            child: Row(
-              children: [
-                DropdownButton<String>(
-                  value: selectedFormation,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedFormation = newValue!;
-                      saveFormation(newValue); // Save selected formation
-                    });
-                  },
-                  items: <String>[
-                    '4231',
-                    '442',
-                    '433',
-                    '541',
-                    '532',
-                    '523',
-                    '343',
-                    '352'
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(
-                        context); // Navigate back to the previous screen
-                  },
-                  child: Text('Confirm'),
-                ),
-              ],
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Positioned(
+              top: 70,
+              right: 30,
+              child: Row(
+                children: [
+                  DropdownButton<String>(
+                    value: selectedFormation,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedFormation = newValue!;
+                        saveFormation(newValue); // Save selected formation
+                      });
+                    },
+                    items: <String>[
+                      '4231',
+                      '442',
+                      '433',
+                      '541',
+                      '532',
+                      '523',
+                      '343',
+                      '352'
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(
+                          context); // Navigate back to the previous screen
+                    },
+                    child: Text('Confirm'),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: buildFormation(selectedFormation),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: buildFormation(selectedFormation),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
