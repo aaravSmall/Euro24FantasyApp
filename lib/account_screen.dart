@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -25,19 +26,22 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
-        password: _passwordController.text,
+        password: _emailController.text,
       );
 
       User? user = userCredential.user;
 
       if (user != null) {
-        final formation = '4231';
         final database = FirebaseDatabase.instance.reference();
-        database
+        DataSnapshot snapshot = (await database
             .child('users')
             .child(user.uid)
             .child('formation')
-            .set(formation);
+            .once()) as DataSnapshot;
+
+        String formation = snapshot.value as String? ?? '4231';
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('selectedFormation', formation);
       }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Login successful!'),
@@ -62,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
-        password: _passwordController.text,
+        password: _emailController.text,
       );
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Registration successful!'),
@@ -95,6 +99,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
+
+      User? user = userCredential.user;
+
+      if (user != null) {
+        final database = FirebaseDatabase.instance.reference();
+        DataSnapshot snapshot = (await database
+            .child('users')
+            .child(user.uid)
+            .child('formation')
+            .once()) as DataSnapshot;
+
+        String formation = snapshot.value as String? ?? '4231';
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('selectedFormation', formation);
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Google Sign-In successful!'),
