@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'search_player_page.dart';
@@ -8,29 +10,35 @@ class EditTeamPage extends StatefulWidget {
 }
 
 class _EditTeamPageState extends State<EditTeamPage> {
-  late String selectedFormation = '4231';
+  late String selectedFormation;
 
   @override
   void initState() {
     super.initState();
-    selectedFormation =
-        '4231'; // Initialize selectedFormation with a default value
-    loadFormation(); // Load saved formation when the page initializes
+    selectedFormation = '4231';
+    loadFormation();
   }
 
-  // Function to load saved formation from local storage
-  void loadFormation() async {
+  Future<void> loadFormation() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      // Retrieve saved formation or default to '4231'
       selectedFormation = prefs.getString('selectedFormation') ?? '4231';
     });
   }
 
-  // Function to save selected formation to local storage
-  void saveFormation(String value) async {
+  Future<void> saveFormation(String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('selectedFormation', value);
+
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final database = FirebaseDatabase.instance.ref();
+      await database
+          .child('users')
+          .child(user.uid)
+          .child('formation')
+          .set(value);
+    }
   }
 
   @override

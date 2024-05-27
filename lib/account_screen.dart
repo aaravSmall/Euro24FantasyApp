@@ -26,22 +26,27 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
-        password: _emailController.text,
+        password: _passwordController.text,
       );
 
       User? user = userCredential.user;
 
       if (user != null) {
-        final database = FirebaseDatabase.instance.reference();
-        DataSnapshot snapshot = (await database
+        final database = FirebaseDatabase.instance.ref();
+        DatabaseEvent event = await database
             .child('users')
             .child(user.uid)
             .child('formation')
-            .once()) as DataSnapshot;
+            .once();
+        DataSnapshot snapshot = event.snapshot;
 
         String formation = snapshot.value as String? ?? '4231';
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('selectedFormation', formation);
+      } else {
+        setState(() {
+          _errorMessage = 'User is null';
+        });
       }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Login successful!'),
@@ -66,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
-        password: _emailController.text,
+        password: _passwordController.text,
       );
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Registration successful!'),
@@ -89,12 +94,27 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        setState(() {
+          _errorMessage = 'Google sign-in cancelled';
+        });
+        return;
+      }
+
       final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+          await googleUser.authentication;
+
+      if (googleAuth == null) {
+        setState(() {
+          _errorMessage = 'Google authentication failed';
+        });
+        return;
+      }
 
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
       UserCredential userCredential =
@@ -103,16 +123,21 @@ class _LoginScreenState extends State<LoginScreen> {
       User? user = userCredential.user;
 
       if (user != null) {
-        final database = FirebaseDatabase.instance.reference();
-        DataSnapshot snapshot = (await database
+        final database = FirebaseDatabase.instance.ref();
+        DatabaseEvent event = await database
             .child('users')
             .child(user.uid)
             .child('formation')
-            .once()) as DataSnapshot;
+            .once();
+        DataSnapshot snapshot = event.snapshot;
 
         String formation = snapshot.value as String? ?? '4231';
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('selectedFormation', formation);
+      } else {
+        setState(() {
+          _errorMessage = 'User is null';
+        });
       }
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -127,6 +152,20 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _saveFormation(String formation) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      final database = FirebaseDatabase.instance.ref();
+      await database
+          .child('users')
+          .child(user.uid)
+          .child('formation')
+          .set(formation);
+    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedFormation', formation);
   }
 
   @override
