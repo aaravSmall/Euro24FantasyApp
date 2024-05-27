@@ -1,5 +1,5 @@
 import 'edit_team_page.dart';
-import 'more_matches_page.dart'; 
+import 'more_matches_page.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatelessWidget {

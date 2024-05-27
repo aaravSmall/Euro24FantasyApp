@@ -1,4 +1,4 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'player.dart'; // Importing Player class from player.dart
 
@@ -48,13 +48,13 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   ];
 
   final List<String> _prices = [
-    'Any',
     '10.0',
     '9.5',
     '9.0',
     '8.5',
     '8.0',
     '7.5',
+    'Any',
     '7.0',
     '6.5',
     '6.0',
@@ -62,15 +62,6 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     '5.0',
     '4.5'
   ];
-
-  final List<String> _positions = [
-    'FW',
-    'DF',
-    'MF',
-    'GK',
-  ];
-
-  List<bool> _isSelectedPosition = [];
 
   List<Player> _players = [];
   List<Player> _filteredPlayers = [];
@@ -80,7 +71,6 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   void initState() {
     super.initState();
     _selectedPosition = widget.positionSelected;
-    _isSelectedPosition = List<bool>.filled(_positions.length, false);
     _searchPlayers();
     _filteredPlayers = _players; // Initialize _filteredPlayers with _players
   }
@@ -96,6 +86,18 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Position buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildPositionButton('GK'),
+                _buildPositionButton('DF'),
+                _buildPositionButton('MF'),
+                _buildPositionButton('FW'),
+              ],
+            ),
+
+            SizedBox(height: 20),
             DropdownButtonFormField<String>(
               value: _selectedNationality,
               onChanged: (newValue) {
@@ -136,7 +138,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
               ),
             ),
             SizedBox(height: 20),
-            SizedBox(height: 20),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -152,6 +154,7 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                 ),
               ],
             ),
+
             SizedBox(height: 20),
             _filteredPlayers.isEmpty
                 ? Text('No players available.')
@@ -190,6 +193,34 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                     },
                   ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPositionButton(String position) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedPosition = position;
+        });
+        _applyFilters();
+      },
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: _selectedPosition == position ? Colors.blue : Colors.grey,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Center(
+          child: Text(
+            position,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );
@@ -267,10 +298,18 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     } else {
       filteredPlayers = _players.where((player) {
         bool matches = true;
-        if (_selectedPosition.isNotEmpty &&
-            player.position != _selectedPosition) {
-          matches = false;
+        if (_selectedPosition.isNotEmpty) {
+          if (_selectedPosition == 'GK' && player.position != 'GK') {
+            matches = false;
+          } else if (_selectedPosition == 'DF' && player.position != 'DF') {
+            matches = false;
+          } else if (_selectedPosition == 'MF' && player.position != 'MF') {
+            matches = false;
+          } else if (_selectedPosition == 'FW' && player.position != 'FW') {
+            matches = false;
+          }
         }
+
         if (_selectedPrice.isNotEmpty &&
             _selectedPrice != 'Any' &&
             double.parse(player.price) > double.parse(_selectedPrice)) {
