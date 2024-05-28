@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'player.dart'; // Importing Player class from player.dart
+import 'edit_team_page.dart';
 
 class SearchPlayerPage extends StatefulWidget {
   final ValueChanged<String>? onPlayerSelected;
   final String positionSelected;
 
-  SearchPlayerPage(
-      {Key? key, this.onPlayerSelected, required this.positionSelected})
+  SearchPlayerPage({Key? key, this.onPlayerSelected, required this.positionSelected})
       : super(key: key);
 
   @override
@@ -18,6 +18,8 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   String _selectedNationality = 'Any';
   String _selectedPrice = '10.0';
   String _selectedPosition = '';
+
+  late List<Player> _addedPlayers = []; // List to track added players
 
   final List<String> _nationalities = [
     'Any',
@@ -48,13 +50,13 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   ];
 
   final List<String> _prices = [
+    'Any',
     '10.0',
     '9.5',
     '9.0',
     '8.5',
     '8.0',
     '7.5',
-    'Any',
     '7.0',
     '6.5',
     '6.0',
@@ -75,6 +77,16 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     _filteredPlayers = _players; // Initialize _filteredPlayers with _players
   }
 
+  void _confirmSelection(BuildContext context) {
+    List<String> selectedPlayers = [];
+    for (int i = 0; i < _filteredPlayers.length; i++) {
+      if (_isSelected[i]) {
+        selectedPlayers.add('${_filteredPlayers[i].playerName} (${_filteredPlayers[i].team})');
+      }
+    }
+    Navigator.pop(context, selectedPlayers.join(", "));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,160 +98,158 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Position buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildPositionButton('GK'),
-                _buildPositionButton('DF'),
-                _buildPositionButton('MF'),
-                _buildPositionButton('FW'),
-              ],
-            ),
-
+            _buildPositionButtons(),
             SizedBox(height: 20),
-            DropdownButtonFormField<String>(
+            _buildDropdown(
+              label: 'Nationality',
               value: _selectedNationality,
-              onChanged: (newValue) {
+              items: _nationalities,
+              onChanged: (value) {
                 setState(() {
-                  _selectedNationality = newValue!;
+                  _selectedNationality = value!;
                 });
                 _applyFilters();
               },
-              items: _nationalities.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Nationality',
-                border: OutlineInputBorder(),
-              ),
             ),
             SizedBox(height: 20),
-            DropdownButtonFormField<String>(
+            _buildDropdown(
+              label: 'Max Price',
               value: _selectedPrice,
-              onChanged: (newValue) {
+              items: _prices,
+              onChanged: (value) {
                 setState(() {
-                  _selectedPrice = newValue!;
+                  _selectedPrice = value!;
                 });
                 _applyFilters();
               },
-              items: _prices.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Max Price',
-                border: OutlineInputBorder(),
-              ),
             ),
             SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: _applyFilters,
-                  child: Text('Search'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _confirmSelection(context);
-                  },
-                  child: Text('Confirm'),
-                ),
-              ],
-            ),
-
+            _buildActionButtons(),
             SizedBox(height: 20),
-            _filteredPlayers.isEmpty
-                ? Text('No players available.')
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: _filteredPlayers.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: ListTile(
-                          title: Text(_filteredPlayers[index].playerName),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  'Position: ${_filteredPlayers[index].position}'),
-                              Text('Goals: ${_filteredPlayers[index].goals}'),
-                              if (_filteredPlayers[index].assists.isNotEmpty)
-                                Text(
-                                    'Assists: ${_filteredPlayers[index].assists}'),
-                              if (_filteredPlayers[index]
-                                  .cleanSheets
-                                  .isNotEmpty)
-                                Text(
-                                    'Clean sheets: ${_filteredPlayers[index].cleanSheets}'),
-                              if (_filteredPlayers[index].points.isNotEmpty)
-                                Text(
-                                    'Points: ${_filteredPlayers[index].points}'),
-                              Text('Price: ${_filteredPlayers[index].price}'),
-                            ],
-                          ),
-                          onTap: () {
-                            _showPlayerDetails(context, index);
-                          },
-                        ),
-                      );
-                    },
-                  ),
+            _buildPlayerList(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPositionButton(String position) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedPosition = position;
-        });
-        _applyFilters();
-      },
-      child: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          color: _selectedPosition == position ? Colors.blue : Colors.grey,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-          child: Text(
-            position,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+  Widget _buildPositionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: ['GK', 'DF', 'MF', 'FW'].map((position) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedPosition = position;
+            });
+            _applyFilters();
+          },
+          child: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: _selectedPosition == position ? Colors.blue : Colors.grey,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Text(
+                position,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
-        ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDropdown({
+    required String label,
+    required String value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      onChanged: onChanged,
+      items: items.map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(),
       ),
     );
   }
 
-  void _confirmSelection(BuildContext context) {
-    List<String> selectedPlayers = [];
-    for (int i = 0; i < _filteredPlayers.length; i++) {
-      if (_isSelected[i]) {
-        selectedPlayers.add(_filteredPlayers[i].playerName);
-      }
-    }
-    widget.onPlayerSelected?.call(selectedPlayers.join(", "));
-    Navigator.pop(context);
+  Widget _buildActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton.icon(
+          onPressed: _applyFilters,
+          icon: Icon(Icons.search),
+          label: Text('Search'),
+        ),
+        ElevatedButton.icon(
+          onPressed: () {
+            _confirmSelection(context);
+          },
+          icon: Icon(Icons.check),
+          label: Text('Confirm'),
+        ),
+      ],
+    );
   }
 
+  Widget _buildPlayerList() {
+    if (_filteredPlayers.isEmpty) {
+      return Text('No players available.');
+    } else {
+      return Container(
+        height: 500, // Specify a fixed height for the ListView
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: _filteredPlayers.length,
+          itemBuilder: (context, index) {
+            return Card(
+              elevation: 3,
+              child: ListTile(
+                title: Text(_filteredPlayers[index].playerName),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Position: ${_filteredPlayers[index].position}'),
+                    Text('Goals: ${_filteredPlayers[index].goals}'),
+                    if (_filteredPlayers[index].assists.isNotEmpty)
+                      Text('Assists: ${_filteredPlayers[index].assists}'),
+                    if (_filteredPlayers[index].cleanSheets.isNotEmpty)
+                      Text('Clean sheets: ${_filteredPlayers[index].cleanSheets}'),
+                    if (_filteredPlayers[index].points.isNotEmpty)
+                      Text('Points: ${_filteredPlayers[index].points}'),
+                    Text('Price: ${_filteredPlayers[index].price}'),
+                  ],
+                ),
+                onTap: () {
+                  _showPlayerDetails(context, index);
+                },
+              ),
+            );
+          },
+        ),
+      );
+    }
+  }
+
+
   void _searchPlayers() async {
-    final DatabaseReference _databaseReference =
-        FirebaseDatabase.instance.reference();
+    final DatabaseReference _databaseReference = FirebaseDatabase.instance.reference();
 
     try {
       final DatabaseEvent event = await _databaseReference.once();
@@ -248,9 +258,6 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
       if (snapshot.value != null) {
         final data = snapshot.value as Map<dynamic, dynamic>;
         final List<dynamic> playersData = data.values.toList();
-
-        // Debug: Log the entire data fetched from Firebase
-        print("Data fetched from Firebase: $playersData");
 
         _players.clear();
         for (var item in playersData) {
@@ -270,18 +277,10 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
           }
         }
 
-        print("Players retrieved: ${_players.length}");
-        for (var player in _players) {
-          print(
-              "Player: ${player.playerName}, Position: ${player.position}, Price: ${player.price}");
-        }
-
         setState(() {
           _isSelected = List<bool>.filled(_players.length, false);
           _applyFilters();
         });
-      } else {
-        print("No players available.");
       }
     } catch (error) {
       print("Error retrieving data: $error");
@@ -289,52 +288,24 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   }
 
   void _applyFilters() {
-    List<Player> filteredPlayers;
-
-    if (_selectedPosition.isEmpty &&
-        _selectedPrice == 'Any' &&
-        _selectedNationality == 'Any') {
-      filteredPlayers = _players;
-    } else {
-      filteredPlayers = _players.where((player) {
-        bool matches = true;
-        if (_selectedPosition.isNotEmpty) {
-          if (_selectedPosition == 'GK' && player.position != 'GK') {
-            matches = false;
-          } else if (_selectedPosition == 'DF' && player.position != 'DF') {
-            matches = false;
-          } else if (_selectedPosition == 'MF' && player.position != 'MF') {
-            matches = false;
-          } else if (_selectedPosition == 'FW' && player.position != 'FW') {
-            matches = false;
-          }
-        }
-
-        if (_selectedPrice.isNotEmpty &&
-            _selectedPrice != 'Any' &&
-            double.parse(player.price) > double.parse(_selectedPrice)) {
-          matches = false;
-        }
-        if (_selectedNationality.isNotEmpty &&
-            _selectedNationality != 'Any' &&
-            player.team != _selectedNationality) {
-          matches = false;
-        }
-        return matches;
-      }).toList();
-    }
+    List<Player> filteredPlayers = _players.where((player) {
+      bool matches = true;
+      if (_selectedPosition.isNotEmpty) {
+        matches = player.position == _selectedPosition;
+      }
+      if (_selectedPrice != 'Any' && double.parse(player.price) > double.parse(_selectedPrice)) {
+        matches = false;
+      }
+      if (_selectedNationality != 'Any' && player.team != _selectedNationality) {
+        matches = false;
+      }
+      return matches;
+    }).toList();
 
     setState(() {
       _filteredPlayers = filteredPlayers;
       _isSelected = List<bool>.filled(_filteredPlayers.length, false);
     });
-
-    // Debug output
-    print("Filtered players: ${_filteredPlayers.length}");
-    for (var player in _filteredPlayers) {
-      print(
-          "Player: ${player.playerName}, Position: ${player.position}, Price: ${player.price}");
-    }
   }
 
   void _showPlayerDetails(BuildContext context, int index) {
@@ -359,6 +330,24 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
             ],
           ),
           actions: <Widget>[
+            if (_isPlayerAdded(_filteredPlayers[index]))
+              TextButton(
+                onPressed: () {
+                  _removePlayerFromTeam(_filteredPlayers[index]);
+                  Navigator.pop(context);
+                },
+                child: Text('Remove Player'),
+              )
+            else
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _addedPlayers.add(_filteredPlayers[index]);
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Add to Team'),
+              ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -370,10 +359,20 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
       },
     );
   }
+
+  bool _isPlayerAdded(Player player) {
+    return _addedPlayers.contains(player);
+  }
+
+  void _removePlayerFromTeam(Player player) {
+    setState(() {
+      _addedPlayers.remove(player);
+    });
+  }
 }
 
 void main() {
   runApp(MaterialApp(
-    home: SearchPlayerPage(positionSelected: "FW"), // Example position
+    home: EditTeamPage(), // Change to EditTeamPage as the starting page
   ));
 }

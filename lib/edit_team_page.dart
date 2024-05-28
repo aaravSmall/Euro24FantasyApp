@@ -33,60 +33,66 @@ class _EditTeamPageState extends State<EditTeamPage> {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final database = FirebaseDatabase.instance.ref();
-      await database
-          .child('users')
-          .child(user.uid)
-          .child('formation')
-          .set(value);
+      await database.child('users').child(user.uid).child('formation').set(value);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Team'),
+        backgroundColor: Colors.blueAccent,
+      ),
       body: SingleChildScrollView(
-        child: Stack(
+        child: Column(
           children: [
-            Positioned(
-              top: 70,
-              right: 30,
-              child: Row(
-                children: [
-                  DropdownButton<String>(
-                    value: selectedFormation,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedFormation = newValue!;
-                        saveFormation(newValue); // Save selected formation
-                      });
-                    },
-                    items: <String>[
-                      '4231',
-                      '442',
-                      '433',
-                      '541',
-                      '532',
-                      '523',
-                      '343',
-                      '352'
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                DropdownButton<String>(
+                  value: selectedFormation,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedFormation = newValue!;
+                      saveFormation(newValue);
+                    });
+                  },
+                  items: <String>[
+                    '4231',
+                    '442',
+                    '433',
+                    '541',
+                    '532',
+                    '523',
+                    '343',
+                    '352'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Confirm'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    textStyle: TextStyle(fontSize: 16),
                   ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(
-                          context); // Navigate back to the previous screen
-                    },
-                    child: Text('Confirm'),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
+            SizedBox(height: 20),
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -123,155 +129,41 @@ class _EditTeamPageState extends State<EditTeamPage> {
   }
 
   List<Widget> buildOtherFormation(int DF, int MD, int FW) {
-    List<Widget> formationWidgets = [];
-
-    // Row 1: Goalkeeper
-    formationWidgets.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: 20),
-          _buildSearchButton('GK'),
-          SizedBox(width: 20),
-        ],
-      ),
-    );
-
-    // Row 2: Defender Formation
-    formationWidgets.add(SizedBox(height: 20));
-    formationWidgets.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _buildPositionRow(DF, "DF"),
-      ),
-    );
-
-    // Row 3: Midfielder Formation
-    formationWidgets.add(SizedBox(height: 20));
-    formationWidgets.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _buildPositionRow(MD, "MF"),
-      ),
-    );
-
-    // Row 4: Forward Formation
-    formationWidgets.add(SizedBox(height: 20));
-    formationWidgets.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _buildPositionRow(FW, "FW"),
-      ),
-    );
-
-    // Add a 100px space between the forward row and the sub bench row
-    formationWidgets.add(SizedBox(height: 100));
-
-    // Sub Bench Formation
-    formationWidgets.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _buildPositionRow(4, "SUB"),
-      ),
-    );
-
-    return formationWidgets;
-  }
-
-  List<Widget> _buildPositionRow(int count, String pos) {
-    List<Widget> positionRow = [];
-    double spacing = 10.0;
-    double boxWidth = 50.0;
-    double totalWidth = count * boxWidth + (count - 1) * spacing;
-
-    for (int i = 0; i < count; i++) {
-      positionRow.add(
-        Row(
-          children: [
-            SizedBox(width: i == 0 ? 20 : spacing),
-            _buildSearchButton(pos),
-            SizedBox(width: i == count - 1 ? 20 : spacing),
-          ],
-        ),
-      );
-    }
-    return positionRow;
+    return [
+      _buildPositionRow(1, 'GK'),
+      _buildPositionRow(DF, 'DF'),
+      _buildPositionRow(MD, 'MF'),
+      _buildPositionRow(FW, 'FW'),
+      SizedBox(height: 50),
+      _buildPositionRow(4, 'SUB'),
+    ];
   }
 
   List<Widget> build4231() {
     return [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: 20),
-          _buildSearchButton('GK'),
-          SizedBox(width: 20),
-        ],
-      ), //GK
-      SizedBox(height: 20),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: 20),
-          _buildSearchButton('DF'),
-          SizedBox(width: 20),
-          _buildSearchButton('DF'),
-          SizedBox(width: 20),
-          _buildSearchButton('DF'),
-          SizedBox(width: 20),
-          _buildSearchButton('DF'),
-          SizedBox(width: 20),
-        ],
-      ), //Defenders
-      SizedBox(height: 20),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: 20),
-          _buildSearchButton('MF'),
-          SizedBox(width: 20),
-          _buildSearchButton('MF'),
-          SizedBox(width: 20),
-        ],
-      ), // Midfielders
-      SizedBox(height: 20),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: 20),
-          _buildSearchButton('MD'),
-          SizedBox(width: 20),
-          _buildSearchButton('MD'),
-          SizedBox(width: 20),
-          _buildSearchButton('MD'),
-          SizedBox(width: 20),
-        ],
-      ), // Attackers/midfields Midfielders
-      SizedBox(height: 20),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: 20),
-          _buildSearchButton('FW'),
-          SizedBox(width: 20),
-        ], // Attackers
-      ),
-      SizedBox(height: 20),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: 20),
-          _buildSearchButton("SUB"),
-          SizedBox(width: 20),
-          _buildSearchButton("SUB"),
-          SizedBox(width: 20),
-          _buildSearchButton("SUB"),
-          SizedBox(width: 20),
-          _buildSearchButton("SUB"),
-          SizedBox(width: 20),
-        ],
-      ),
+      _buildPositionRow(1, 'GK'),
+      _buildPositionRow(4, 'DF'),
+      _buildPositionRow(2, 'MF'),
+      _buildPositionRow(3, 'MD'),
+      _buildPositionRow(1, 'FW'),
+      SizedBox(height: 50),
+      _buildPositionRow(4, 'SUB'),
     ];
+  }
+
+  Widget _buildPositionRow(int count, String positionSelected) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(count, (index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            child: _buildSearchButton(positionSelected),
+          );
+        }),
+      ),
+    );
   }
 
   Widget _buildSearchButton(String positionSelected) {
@@ -280,16 +172,24 @@ class _EditTeamPageState extends State<EditTeamPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                SearchPlayerPage(positionSelected: positionSelected),
+            builder: (context) => SearchPlayerPage(positionSelected: positionSelected),
           ),
         );
       },
       child: Container(
         width: 60,
         height: 100,
-        color: Colors.blue,
-        margin: EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: Colors.blueAccent,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 5,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
         child: Center(
           child: Text(
             '+',

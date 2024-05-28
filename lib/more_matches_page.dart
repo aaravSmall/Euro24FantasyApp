@@ -71,9 +71,7 @@ class _MoreMatchesPageState extends State<MoreMatchesPage> {
             final matchDetails = matchData.trim().split('\n');
 
             final team1 = matchDetails[0].split(':')[1].trim().split('vs.')[0].split(' ')[0].trim();
-            print(team1);
             final team2 = matchDetails[0].split('vs.')[1].split('(')[0].trim();
-            print(team2);
             final location = matchDetails[0].split('(')[1].split(';')[0].trim();
             final time = matchDetails[0].split('(')[1].split(';')[1].split(')')[0].trim();
             final group = matchDetails[0].split(':')[0].trim();
@@ -102,41 +100,51 @@ class _MoreMatchesPageState extends State<MoreMatchesPage> {
       appBar: AppBar(
         title: Text('More Matches'),
       ),
-      body: ListView.builder(
-        itemCount: matchesByDate.length,
-        itemBuilder: (context, index) {
-          String date = matchesByDate.keys.toList()[index];
-          List<Match> matchesForDate = matchesByDate[date]!;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  date,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade900, Colors.blue.shade700],
+          ),
+        ),
+        child: ListView.builder(
+          itemCount: matchesByDate.length,
+          itemBuilder: (context, index) {
+            String date = matchesByDate.keys.toList()[index];
+            List<Match> matchesForDate = matchesByDate[date]!;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    date,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: matchesForDate.length,
-                itemBuilder: (context, index) {
-                  Match match = matchesForDate[index];
-                  return Card(
-                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    elevation: 2,
-                    child: ListTile(
-                      title: Text('${match.team1} vs ${match.team2}'),
-                      subtitle: Text('${match.location}, ${match.time}'),
-                      trailing: Text('Group: ${match.group}'),
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        },
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: matchesForDate.length,
+                  itemBuilder: (context, index) {
+                    Match match = matchesForDate[index];
+                    return Card(
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      elevation: 2,
+                      color: Colors.white,
+                      child: ListTile(
+                        title: Text('${match.team1} vs ${match.team2}'),
+                        subtitle: Text('${match.location}, ${match.time}'),
+                        trailing: Text('Group: ${match.group}'),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
