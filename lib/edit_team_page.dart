@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'search_player_page.dart';
+import 'player.dart'; // Importing Player class from player.dart
 
 class EditTeamPage extends StatefulWidget {
   @override
@@ -11,6 +12,16 @@ class EditTeamPage extends StatefulWidget {
 
 class _EditTeamPageState extends State<EditTeamPage> {
   late String selectedFormation;
+  Map<String, List<Player?>> _selectedPlayers = {
+    'GK': [null],
+    'DF': [null, null, null, null],
+    'MF': [null, null],
+    'MD': [null, null, null],
+    'FW': [null],
+    'SUB': [null, null, null, null],
+  };
+  late String _positionSelected;
+  late int _selectedIndex;
 
   @override
   void initState() {
@@ -33,7 +44,29 @@ class _EditTeamPageState extends State<EditTeamPage> {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final database = FirebaseDatabase.instance.ref();
-      await database.child('users').child(user.uid).child('formation').set(value);
+      await database
+          .child('users')
+          .child(user.uid)
+          .child('formation')
+          .set(value);
+    }
+  }
+
+  Future<void> _navigateAndDisplaySelection(
+      BuildContext context, String positionSelected, int index) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            SearchPlayerPage(positionSelected: positionSelected),
+      ),
+    );
+
+    if (result != null && result is List<Player>) {
+      setState(() {
+        _selectedPlayers[positionSelected]![index] =
+            result.isNotEmpty ? result[0] : null;
+      });
     }
   }
 
@@ -159,22 +192,47 @@ class _EditTeamPageState extends State<EditTeamPage> {
         children: List.generate(count, (index) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0),
-            child: _buildSearchButton(positionSelected),
+            child: _buildPositionRowContent(positionSelected, index),
           );
         }),
       ),
     );
   }
 
-  Widget _buildSearchButton(String positionSelected) {
+  Widget _buildPositionRowContent(String positionSelected, int index) {
+    List<Player?> players = _selectedPlayers[positionSelected] ?? [];
+    if (index < players.length && players[index] != null) {
+      return Container(
+        width: 60,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.greenAccent,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 5,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            players[index]!.playerName,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 12),
+          ),
+        ),
+      );
+    } else {
+      return _buildSearchButton(positionSelected, index);
+    }
+  }
+
+  Widget _buildSearchButton(String positionSelected, int index) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SearchPlayerPage(positionSelected: positionSelected),
-          ),
-        );
+        _navigateAndDisplaySelection(context, positionSelected, index);
       },
       child: Container(
         width: 60,
