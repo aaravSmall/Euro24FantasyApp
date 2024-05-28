@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'player.dart'; // Importing Player class from player.dart
+import 'edit_team_page.dart';
 
 class SearchPlayerPage extends StatefulWidget {
   final ValueChanged<String>? onPlayerSelected;
@@ -18,6 +19,9 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   String _selectedNationality = 'Any';
   String _selectedPrice = '10.0';
   String _selectedPosition = '';
+
+  late List<Player> _addedPlayers = []; // List to track added players
+
 
   final List<String> _nationalities = [
     'Any',
@@ -74,6 +78,17 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     _searchPlayers();
     _filteredPlayers = _players; // Initialize _filteredPlayers with _players
   }
+
+  void _confirmSelection(BuildContext context) {
+    List<String> selectedPlayers = [];
+    for (int i = 0; i < _filteredPlayers.length; i++) {
+      if (_isSelected[i]) {
+        selectedPlayers.add('${_filteredPlayers[i].playerName} (${_filteredPlayers[i].team})');
+      }
+    }
+    Navigator.pop(context, selectedPlayers.join(", "));
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -226,17 +241,6 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     );
   }
 
-  void _confirmSelection(BuildContext context) {
-    List<String> selectedPlayers = [];
-    for (int i = 0; i < _filteredPlayers.length; i++) {
-      if (_isSelected[i]) {
-        selectedPlayers.add(_filteredPlayers[i].playerName);
-      }
-    }
-    widget.onPlayerSelected?.call(selectedPlayers.join(", "));
-    Navigator.pop(context);
-  }
-
   void _searchPlayers() async {
     final DatabaseReference _databaseReference =
         FirebaseDatabase.instance.reference();
@@ -359,6 +363,24 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
             ],
           ),
           actions: <Widget>[
+            if (_isPlayerAdded(_filteredPlayers[index]))
+              TextButton(
+                onPressed: () {
+                  _removePlayerFromTeam(_filteredPlayers[index]);
+                  Navigator.pop(context);
+                },
+                child: Text('Remove Player'),
+              )
+            else
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _addedPlayers.add(_filteredPlayers[index]);
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Add to Team'),
+              ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -370,10 +392,23 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
       },
     );
   }
+
+  bool _isPlayerAdded(Player player) {
+    return _addedPlayers.contains(player);
+  }
+
+  // Remove player from the team
+  void _removePlayerFromTeam(Player player) {
+    setState(() {
+      _addedPlayers.remove(player);
+    });
+  }
 }
 
 void main() {
   runApp(MaterialApp(
-    home: SearchPlayerPage(positionSelected: "FW"), // Example position
+    home: EditTeamPage(), // Change to EditTeamPage as the starting page
   ));
 }
+
+
