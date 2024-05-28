@@ -30,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       User? user = userCredential.user;
-
+      
       if (user != null) {
         final database = FirebaseDatabase.instance.ref();
         DatabaseEvent event = await database
