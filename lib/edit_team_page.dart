@@ -3,7 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'search_player_page.dart';
-import 'player.dart'; // Importing Player class from player.dart
+import 'player.dart';
+import 'dart:convert';
 
 class EditTeamPage extends StatefulWidget {
   @override
@@ -28,7 +29,34 @@ class _EditTeamPageState extends State<EditTeamPage> {
     super.initState();
     selectedFormation = '4231';
     loadFormation();
+    loadPlayers();
+
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        loadPlayers();
+      } else {
+        savePlayers();
+      }
+    });
+
+    WidgetsBinding.instance.addObserver(AppLifecycleListener(onResume: () {
+      loadFormation();
+      loadPlayers();
+    }, onPause: () {
+      saveFormation(selectedFormation);
+      savePlayers();
+    }, onDetach: () {
+      savePlayers();
+    }));
   }
+
+  /*Future<void> savePlayers2() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String playersJson = jsonEncode(_selectedPlayers.map((key, value) {
+      return MapEntry(key, value.map((player) => player?.toJson()).toList());
+    }));
+    await prefs.setString('selectedPlayers', playersJson);
+  }*/
 
   Future<void> loadFormation() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -52,6 +80,33 @@ class _EditTeamPageState extends State<EditTeamPage> {
     }
   }
 
+  Future<void> loadPlayers() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? playersJson = prefs.getString('selectedPlayers');
+    if (playersJson != null) {
+      Map<String, dynamic> playersMap = jsonDecode(playersJson);
+      setState(() {
+        _selectedPlayers = playersMap.map((key, value) {
+          List<dynamic> playersList = value;
+          return MapEntry(
+              key,
+              playersList
+                  .map((playerJson) =>
+                      playerJson != null ? Player.fromJson(playerJson) : null)
+                  .toList());
+        });
+      });
+    }
+  }
+
+  Future<void> savePlayers() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String playersJson = jsonEncode(_selectedPlayers.map((key, value) {
+      return MapEntry(key, value.map((player) => player?.toJson()).toList());
+    }));
+    await prefs.setString('selectedPlayers', playersJson);
+  }
+
   Future<void> _navigateAndDisplaySelection(
       BuildContext context, String positionSelected, int index) async {
     final result = await Navigator.push(
@@ -64,9 +119,16 @@ class _EditTeamPageState extends State<EditTeamPage> {
 
     if (result != null && result is List<Player>) {
       setState(() {
-        _selectedPlayers[positionSelected]![index] =
-            result.isNotEmpty ? result[0] : null;
+        if (index < _selectedPlayers[positionSelected]!.length) {
+          _selectedPlayers[positionSelected]![index] =
+              result.isNotEmpty ? result[0] : null;
+        } else {
+          _selectedPlayers[positionSelected]!
+              .add(result.isNotEmpty ? result[0] : null);
+        }
       });
+
+      savePlayers();
     }
   }
 
@@ -114,6 +176,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
                 SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: () {
+                    savePlayers(); // Save players when confirming
                     Navigator.pop(context);
                   },
                   child: Text('Confirm'),
@@ -230,7 +293,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
   }
 
   Widget _buildSearchButton(String positionSelected, int index) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         _navigateAndDisplaySelection(context, positionSelected, index);
       },
@@ -249,10 +312,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
           ],
         ),
         child: Center(
-          child: Text(
-            '+',
-            style: TextStyle(color: Colors.white, fontSize: 32),
-          ),
+          child: Icon(Icons.add, color: Colors.white),
         ),
       ),
     );

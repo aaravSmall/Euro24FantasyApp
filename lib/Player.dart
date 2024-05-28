@@ -22,4 +22,36 @@ class Player {
     required this.team,
     required this.yellowCards,
   });
+
+  // Convert a Player object into a Map object
+  Map<String, dynamic> toJson() {
+    return {
+      'playerName': playerName,
+      'position': position,
+      'goals': goals,
+      'assists': assists,
+      'cleanSheets': cleanSheets,
+      'points': points,
+      'price': price,
+      'redCards': redCards,
+      'team': team,
+      'yellowCards': yellowCards,
+    };
+  }
+
+  // Convert a Map object into a Player object
+  factory Player.fromJson(Map<String, dynamic> json) {
+    return Player(
+      playerName: json['playerName'],
+      position: json['position'],
+      goals: json['goals'],
+      assists: json['assists'],
+      cleanSheets: json['cleanSheets'],
+      points: json['points'],
+      price: json['price'],
+      redCards: json['redCards'],
+      team: json['team'],
+      yellowCards: json['yellowCards'],
+    );
+  }
 }
