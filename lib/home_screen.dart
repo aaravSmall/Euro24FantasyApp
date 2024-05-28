@@ -139,6 +139,10 @@ class _MainScreenState extends State<MainScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.white,
+                image: DecorationImage(
+                  image: NetworkImage('https://ghillie-dhu.co.uk/wp-content/uploads/2024/03/euro24.jpg'),
+                  fit: BoxFit.cover,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -149,7 +153,7 @@ class _MainScreenState extends State<MainScreen> {
                 ],
               ),
               child: Center(
-                child: Text('Rectangle'),
+                child: Text(''),
               ),
             ),
           ),
@@ -197,6 +201,10 @@ class _MainScreenState extends State<MainScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
+                          image: DecorationImage(
+                            image: NetworkImage('https://cdn.theathletic.com/cdn-cgi/image/width=1440%2cformat=auto%2cquality=75/https://cdn.theathletic.com/app/uploads/2023/10/18023719/JUDE-BELLINGHAM-ENGLAND-1-1024x682.jpeg'),
+                            fit: BoxFit.cover,
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.3),
@@ -207,7 +215,7 @@ class _MainScreenState extends State<MainScreen> {
                           ],
                         ),
                         child: Center(
-                          child: Text('Score: 0 - 0'),
+                          child: Text(''),
                         ),
                       ),
                       Container(
@@ -216,6 +224,10 @@ class _MainScreenState extends State<MainScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
+                          image: DecorationImage(
+                            image: NetworkImage('https://cdn.vox-cdn.com/thumbor/5PaRUlMSLgg2gBnQD1vX_Df8Qes=/0x0:5250x3500/1820x1213/filters:focal(3209x568:4049x1408):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/72129232/1249853086.0.jpg'),
+                            fit: BoxFit.cover,
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.3),
@@ -225,7 +237,7 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ],
                         ),
-                        child: Center(child: Text('Score: 0 - 0'),
+                        child: Center(child: Text(''),
                         ),
                       ),
                     ],
