@@ -7,7 +7,8 @@ class SearchPlayerPage extends StatefulWidget {
   final ValueChanged<String>? onPlayerSelected;
   final String positionSelected;
 
-  SearchPlayerPage({Key? key, this.onPlayerSelected, required this.positionSelected})
+  SearchPlayerPage(
+      {Key? key, this.onPlayerSelected, required this.positionSelected})
       : super(key: key);
 
   @override
@@ -78,13 +79,13 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
   }
 
   void _confirmSelection(BuildContext context) {
-    List<String> selectedPlayers = [];
+    List<Player> selectedPlayers = [];
     for (int i = 0; i < _filteredPlayers.length; i++) {
       if (_isSelected[i]) {
-        selectedPlayers.add('${_filteredPlayers[i].playerName} (${_filteredPlayers[i].team})');
+        selectedPlayers.add(_filteredPlayers[i]);
       }
     }
-    Navigator.pop(context, selectedPlayers.join(", "));
+    Navigator.pop(context, selectedPlayers); // Pass back the selected players
   }
 
   @override
@@ -230,7 +231,8 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
                     if (_filteredPlayers[index].assists.isNotEmpty)
                       Text('Assists: ${_filteredPlayers[index].assists}'),
                     if (_filteredPlayers[index].cleanSheets.isNotEmpty)
-                      Text('Clean sheets: ${_filteredPlayers[index].cleanSheets}'),
+                      Text(
+                          'Clean sheets: ${_filteredPlayers[index].cleanSheets}'),
                     if (_filteredPlayers[index].points.isNotEmpty)
                       Text('Points: ${_filteredPlayers[index].points}'),
                     Text('Price: ${_filteredPlayers[index].price}'),
@@ -247,9 +249,9 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     }
   }
 
-
   void _searchPlayers() async {
-    final DatabaseReference _databaseReference = FirebaseDatabase.instance.reference();
+    final DatabaseReference _databaseReference =
+        FirebaseDatabase.instance.reference();
 
     try {
       final DatabaseEvent event = await _databaseReference.once();
@@ -293,10 +295,12 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
       if (_selectedPosition.isNotEmpty) {
         matches = player.position == _selectedPosition;
       }
-      if (_selectedPrice != 'Any' && double.parse(player.price) > double.parse(_selectedPrice)) {
+      if (_selectedPrice != 'Any' &&
+          double.parse(player.price) > double.parse(_selectedPrice)) {
         matches = false;
       }
-      if (_selectedNationality != 'Any' && player.team != _selectedNationality) {
+      if (_selectedNationality != 'Any' &&
+          player.team != _selectedNationality) {
         matches = false;
       }
       return matches;
@@ -329,50 +333,25 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
               Text('Price: ${_filteredPlayers[index].price}'),
             ],
           ),
-          actions: <Widget>[
-            if (_isPlayerAdded(_filteredPlayers[index]))
-              TextButton(
-                onPressed: () {
-                  _removePlayerFromTeam(_filteredPlayers[index]);
-                  Navigator.pop(context);
-                },
-                child: Text('Remove Player'),
-              )
-            else
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _addedPlayers.add(_filteredPlayers[index]);
-                  });
-                  Navigator.pop(context);
-                },
-                child: Text('Add to Team'),
-              ),
+          actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
               child: Text('Close'),
             ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _isSelected[index] = !_isSelected[index];
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text(_isSelected[index] ? 'Deselect' : 'Select'),
+            ),
           ],
         );
       },
     );
   }
-
-  bool _isPlayerAdded(Player player) {
-    return _addedPlayers.contains(player);
-  }
-
-  void _removePlayerFromTeam(Player player) {
-    setState(() {
-      _addedPlayers.remove(player);
-    });
-  }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: EditTeamPage(), // Change to EditTeamPage as the starting page
-  ));
 }

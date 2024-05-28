@@ -25,7 +25,7 @@ class _MainAppWithTabsState extends State<MainAppWithTabs> {
           userPoints: userPoints,
           countdown: countdown,
         ),
-        BracketPredictorApp(),
+        LeaguesScreen(),
         LoginScreen(),
       ];
 
