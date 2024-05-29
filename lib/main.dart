@@ -23,6 +23,7 @@ class MainApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginScreen(),
         '/main': (context) => MainAppWithTabs(),
+        '/register': (context) => RegisterScreen(),
       },
     );
   }

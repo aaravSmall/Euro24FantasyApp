@@ -15,22 +15,50 @@ class _TournamentScreenState extends State<TournamentScreen> {
     Group(name: 'Group F', teams: [Team('Turkey'), Team('Georgia'), Team('Portugal'), Team('Czech Republic')]),
   ];
 
-  List<Match> matches = [];
+  List<Match> knockoutMatches = [];
+  int currentRoundIndex = 0;
+
+  Map<String, Team?> selectedTeams = {};
 
   @override
   void initState() {
     super.initState();
-    // Initialize knockout stage matches based on group standings
-    // This is just an example, you need to implement the logic to determine the actual matches
-    matches = [
-      Match(team1: groups[0].teams[0], team2: groups[1].teams[1]),
-      Match(team1: groups[1].teams[0], team2: groups[0].teams[1]),
-      Match(team1: groups[2].teams[0], team2: groups[3].teams[1]),
-      Match(team1: groups[3].teams[0], team2: groups[2].teams[1]),
-      Match(team1: groups[4].teams[0], team2: groups[5].teams[1]),
-      Match(team1: groups[5].teams[0], team2: groups[4].teams[1]),
-      // Add other matches here
-    ];
+    _initializeKnockoutMatches();
+  }
+
+  void _initializeKnockoutMatches() {
+    knockoutMatches.clear();
+    for (int i = 0; i < groups.length - 1; i += 2) {
+      Team? team1 = selectedTeams[groups[i].name];
+      Team? team2 = selectedTeams[groups[i].name + "_second"];
+      Team? team3 = selectedTeams[groups[i + 1].name];
+      Team? team4 = selectedTeams[groups[i + 1].name + "_second"];
+      knockoutMatches.add(Match(
+        team1: team1 ?? Team('No Team Selected'),
+        team2: team4 ?? Team('No Team Selected'),
+      ));
+      knockoutMatches.add(Match(
+        team1: team3 ?? Team('No Team Selected'),
+        team2: team2 ?? Team('No Team Selected'),
+      ));
+    }
+  }
+
+  void _updateKnockoutMatches() {
+    setState(() {
+      _initializeKnockoutMatches();
+    });
+  }
+
+  void _progressToNextRound() {
+    setState(() {
+      currentRoundIndex++;
+      if (currentRoundIndex == 3) {
+        // Tournament finished
+        return;
+      }
+      _initializeKnockoutMatches();
+    });
   }
 
   @override
@@ -41,10 +69,14 @@ class _TournamentScreenState extends State<TournamentScreen> {
         child: Column(
           children: [
             Text('Group Stage', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            ...groups.map((group) => GroupWidget(group: group)).toList(),
+            ...groups.map((group) => GroupWidget(group: group, selectedTeams: selectedTeams, onUpdate: _updateKnockoutMatches)).toList(),
             SizedBox(height: 20),
             Text('Knockout Stage', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            ...matches.map((match) => MatchWidget(match: match)).toList(),
+            ...knockoutMatches.map((match) => MatchWidget(match: match)).toList(),
+            ElevatedButton(
+              onPressed: _progressToNextRound,
+              child: Text('Proceed to Next Round'),
+            ),
           ],
         ),
       ),
@@ -52,18 +84,75 @@ class _TournamentScreenState extends State<TournamentScreen> {
   }
 }
 
-class GroupWidget extends StatelessWidget {
+class GroupWidget extends StatefulWidget {
   final Group group;
+  final Map<String, Team?> selectedTeams;
+  final VoidCallback onUpdate;
 
-  GroupWidget({required this.group});
+  GroupWidget({required this.group, required this.selectedTeams, required this.onUpdate});
+
+  @override
+  _GroupWidgetState createState() => _GroupWidgetState();
+}
+
+class _GroupWidgetState extends State<GroupWidget> {
+  Team? firstPlace;
+  Team? secondPlace;
+  late List<Team> secondPlaceOptions;
+
+  @override
+  void initState() {
+    super.initState();
+    firstPlace = widget.selectedTeams[widget.group.name];
+    secondPlace = widget.selectedTeams['${widget.group.name}_second'];
+    secondPlaceOptions = widget.group.teams.where((team) => team != firstPlace).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Column(
         children: [
-          Text(group.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          ...group.teams.map((team) => ListTile(title: Text(team.name))).toList(),
+          Text(widget.group.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          DropdownButtonFormField<Team>(
+            value: firstPlace,
+            items: widget.group.teams.map<DropdownMenuItem<Team>>((Team team) {
+              return DropdownMenuItem<Team>(
+                value: team,
+                child: Text(team.name),
+              );
+            }).toList(),
+            onChanged: (Team? newValue) {
+              setState(() {
+                firstPlace = newValue;
+                widget.selectedTeams[widget.group.name] = newValue;
+                secondPlaceOptions = widget.group.teams.where((team) => team != newValue).toList();
+                if (secondPlaceOptions.contains(secondPlace)) {
+                  secondPlace = null;
+                  widget.selectedTeams['${widget.group.name}_second'] = null;
+                }
+                widget.onUpdate();
+              });
+            },
+            decoration: InputDecoration(labelText: 'First Place'),
+          ),
+          DropdownButtonFormField<Team>(
+            value: secondPlace,
+            items: secondPlaceOptions.map<DropdownMenuItem<Team>>((Team team) {
+              return DropdownMenuItem<Team>(
+                value: team,
+                child: Text(team.name),
+              );
+            }).toList(),
+            onChanged: (Team? newValue) {
+              setState(() {
+                secondPlace = newValue;
+                widget.selectedTeams['${widget.group.name}_second'] = newValue;
+                widget.onUpdate();
+              });
+            },
+            decoration: InputDecoration(labelText: 'Second Place'),
+          ),
         ],
       ),
     );
@@ -125,7 +214,6 @@ class Team {
   Team(this.name);
 }
 
-// models/match.dart
 class Match {
   final Team team1;
   final Team team2;
@@ -134,10 +222,10 @@ class Match {
   Match({required this.team1, required this.team2, this.winner});
 }
 
-// models/group.dart
 class Group {
   final String name;
   final List<Team> teams;
 
   Group({required this.name, required this.teams});
 }
+
