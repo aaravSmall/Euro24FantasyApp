@@ -6,7 +6,6 @@ import 'search_player_page.dart';
 import 'Player.dart';
 import 'dart:convert';
 
-
 class EditTeamPage extends StatefulWidget {
   @override
   _EditTeamPageState createState() => _EditTeamPageState();
@@ -102,6 +101,11 @@ class _EditTeamPageState extends State<EditTeamPage> {
     );
   }
 
+  bool _isPlayerSelected(Player player) {
+    return _selectedPlayers.values.any((players) =>
+        players.any((p) => p != null && p!.playerName == player.playerName));
+  }
+
   Future<void> _navigateAndDisplaySelection(
       BuildContext context, String positionSelected, int index) async {
     final result = await Navigator.push(
@@ -113,11 +117,19 @@ class _EditTeamPageState extends State<EditTeamPage> {
     );
 
     if (result != null && result is List<Player>) {
-      setState(() {
-        _selectedPlayers[positionSelected]![index] =
-            result.isNotEmpty ? result[0] : null;
-      });
-      await savePlayers(); // Save players immediately after selection
+      if (!_isPlayerSelected(result[0])) {
+        setState(() {
+          _selectedPlayers[positionSelected]![index] =
+              result.isNotEmpty ? result[0] : null;
+        });
+        await savePlayers(); // Save players immediately after selection
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${result[0].playerName} is already in the team.'),
+          ),
+        );
+      }
     }
   }
 
