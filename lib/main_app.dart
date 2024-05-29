@@ -25,8 +25,8 @@ class _MainAppWithTabsState extends State<MainAppWithTabs> {
           userPoints: userPoints,
           countdown: countdown,
         ),
-        LeaguesScreen(),
-        LoginScreen(),
+        BracketPredictorApp(),
+        AccountScreen(),
       ];
 
   @override

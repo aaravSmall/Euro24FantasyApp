@@ -23,7 +23,6 @@ class Player {
     required this.yellowCards,
   });
 
-  // Convert a Player object into a Map object
   Map<String, dynamic> toJson() {
     return {
       'playerName': playerName,
@@ -39,7 +38,6 @@ class Player {
     };
   }
 
-  // Convert a Map object into a Player object
   factory Player.fromJson(Map<String, dynamic> json) {
     return Player(
       playerName: json['playerName'],

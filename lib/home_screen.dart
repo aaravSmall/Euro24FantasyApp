@@ -60,7 +60,8 @@ class _MainScreenState extends State<MainScreen> {
           );
         }).toList();
 
-        players.sort((a, b) => int.parse(b.goals).compareTo(int.parse(a.goals)));
+        players
+            .sort((a, b) => int.parse(b.goals).compareTo(int.parse(a.goals)));
 
         setState(() {
           topScorers = players.take(3).toList();
@@ -100,7 +101,8 @@ class _MainScreenState extends State<MainScreen> {
           );
         }).toList();
 
-        players.sort((a, b) => int.parse(b.points).compareTo(int.parse(a.points)));
+        players
+            .sort((a, b) => int.parse(b.points).compareTo(int.parse(a.points)));
 
         setState(() {
           topPoints = players.take(3).toList();
@@ -139,8 +141,9 @@ class _MainScreenState extends State<MainScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.white,
-                image: DecorationImage(
-                  image: NetworkImage('https://ghillie-dhu.co.uk/wp-content/uploads/2024/03/euro24.jpg'),
+                image: const DecorationImage(
+                  image: NetworkImage(
+                      'https://ghillie-dhu.co.uk/wp-content/uploads/2024/03/euro24.jpg'),
                   fit: BoxFit.cover,
                 ),
                 boxShadow: [
@@ -202,7 +205,8 @@ class _MainScreenState extends State<MainScreen> {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                           image: DecorationImage(
-                            image: NetworkImage('https://cdn.theathletic.com/cdn-cgi/image/width=1440%2cformat=auto%2cquality=75/https://cdn.theathletic.com/app/uploads/2023/10/18023719/JUDE-BELLINGHAM-ENGLAND-1-1024x682.jpeg'),
+                            image: NetworkImage(
+                                'https://cdn.theathletic.com/cdn-cgi/image/width=1440%2cformat=auto%2cquality=75/https://cdn.theathletic.com/app/uploads/2023/10/18023719/JUDE-BELLINGHAM-ENGLAND-1-1024x682.jpeg'),
                             fit: BoxFit.cover,
                           ),
                           boxShadow: [
@@ -225,7 +229,8 @@ class _MainScreenState extends State<MainScreen> {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                           image: DecorationImage(
-                            image: NetworkImage('https://cdn.vox-cdn.com/thumbor/5PaRUlMSLgg2gBnQD1vX_Df8Qes=/0x0:5250x3500/1820x1213/filters:focal(3209x568:4049x1408):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/72129232/1249853086.0.jpg'),
+                            image: NetworkImage(
+                                'https://cdn.vox-cdn.com/thumbor/5PaRUlMSLgg2gBnQD1vX_Df8Qes=/0x0:5250x3500/1820x1213/filters:focal(3209x568:4049x1408):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/72129232/1249853086.0.jpg'),
                             fit: BoxFit.cover,
                           ),
                           boxShadow: [
@@ -237,7 +242,8 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ],
                         ),
-                        child: Center(child: Text(''),
+                        child: Center(
+                          child: Text(''),
                         ),
                       ),
                     ],
@@ -391,5 +397,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-
-                         

@@ -29,25 +29,34 @@ class _EditTeamPageState extends State<EditTeamPage> {
     super.initState();
     selectedFormation = '4231';
     loadFormation();
-    loadPlayers();
+    loadPlayers(); // Load players when initializing the page
 
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user != null) {
-        loadPlayers();
+        loadPlayers(); // Load players if the user is logged in
       } else {
         savePlayers();
+        // No need to save players here, as they're saved when selecting a player
       }
     });
 
-    WidgetsBinding.instance.addObserver(AppLifecycleListener(onResume: () {
-      loadFormation();
-      loadPlayers();
-    }, onPause: () {
-      saveFormation(selectedFormation);
-      savePlayers();
-    }, onDetach: () {
-      savePlayers();
-    }));
+    WidgetsBinding.instance!.addObserver(AppLifecycleListener(
+      onResume: () {
+        loadFormation();
+        loadPlayers();
+      },
+      onPause: () {
+        saveFormation(selectedFormation);
+        savePlayers();
+      },
+    ));
+  }
+
+  @override
+  void dispose() {
+    saveFormation(selectedFormation);
+    savePlayers();
+    super.dispose();
   }
 
   /*Future<void> savePlayers2() async {
@@ -83,7 +92,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
   Future<void> loadPlayers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? playersJson = prefs.getString('selectedPlayers');
-    if (playersJson != null) {
+    if (playersJson != null && playersJson.isNotEmpty) {
       Map<String, dynamic> playersMap = jsonDecode(playersJson);
       setState(() {
         _selectedPlayers = playersMap.map((key, value) {
@@ -101,9 +110,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
 
   Future<void> savePlayers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String playersJson = jsonEncode(_selectedPlayers.map((key, value) {
-      return MapEntry(key, value.map((player) => player?.toJson()).toList());
-    }));
+    String playersJson = jsonEncode(_selectedPlayers);
     await prefs.setString('selectedPlayers', playersJson);
   }
 
