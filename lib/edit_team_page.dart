@@ -27,7 +27,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
     super.initState();
     selectedFormation = '4231';
     loadFormation();
-    loadPlayers(); // Load players when initializing the state
+    loadPlayers();
   }
 
   Future<void> loadFormation() async {
@@ -122,7 +122,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
           _selectedPlayers[positionSelected]![index] =
               result.isNotEmpty ? result[0] : null;
         });
-        await savePlayers(); // Save players immediately after selection
+        await savePlayers();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -131,6 +131,13 @@ class _EditTeamPageState extends State<EditTeamPage> {
         );
       }
     }
+  }
+
+  Future<void> _removePlayer(String position, int index) async {
+    setState(() {
+      _selectedPlayers[position]![index] = null;
+    });
+    await savePlayers();
   }
 
   @override
@@ -265,27 +272,45 @@ class _EditTeamPageState extends State<EditTeamPage> {
   Widget _buildPositionRowContent(String positionSelected, int index) {
     List<Player?> players = _selectedPlayers[positionSelected] ?? [];
     if (index < players.length && players[index] != null) {
-      return Container(
-        width: 60,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.greenAccent,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 5,
-              offset: Offset(0, 2),
+      return Stack(
+        children: [
+          Container(
+            width: 60,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.greenAccent,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 5,
+                  offset: Offset(0, 2),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            players[index]!.playerName,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: 12),
+            child: Center(
+              child: Text(
+                players[index]!.playerName,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
           ),
-        ),
+          Positioned(
+            top: 2,
+            right: 2,
+            child: GestureDetector(
+              onTap: () {
+                _removePlayer(positionSelected, index);
+              },
+              child: Icon(
+                Icons.remove_circle,
+                color: Colors.red,
+                size: 20,
+              ),
+            ),
+          ),
+        ],
       );
     } else {
       return _buildSearchButton(positionSelected, index);
