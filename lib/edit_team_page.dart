@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,8 +10,6 @@ class EditTeamPage extends StatefulWidget {
   _EditTeamPageState createState() => _EditTeamPageState();
 }
 
-//I love my life so much
-
 class _EditTeamPageState extends State<EditTeamPage> {
   late String selectedFormation;
   Map<String, List<Player?>> _selectedPlayers = {
@@ -23,8 +20,6 @@ class _EditTeamPageState extends State<EditTeamPage> {
     'FW': [null],
     'SUB': [null, null, null, null],
   };
-  late String _positionSelected;
-  late int _selectedIndex;
 
   @override
   void initState() {
@@ -58,29 +53,51 @@ class _EditTeamPageState extends State<EditTeamPage> {
 
   Future<void> loadPlayers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? playersJson = prefs.getString('selectedPlayers');
-    if (playersJson != null) {
-      Map<String, dynamic> playersMap = jsonDecode(playersJson);
-      setState(() {
-        _selectedPlayers = playersMap.map((key, value) {
-          List<dynamic> playersList = value;
-          return MapEntry(
-              key,
-              playersList
-                  .map((playerJson) =>
-                      playerJson != null ? Player.fromJson(playerJson) : null)
-                  .toList());
+    setState(() {
+      _selectedPlayers = _selectedPlayers.map((position, players) {
+        List<Player?> loadedPlayers = List.generate(players.length, (index) {
+          String? playerData = prefs.getString('$position$index');
+          if (playerData != null) {
+            return _deserializePlayer(playerData);
+          }
+          return null;
         });
+        return MapEntry(position, loadedPlayers);
       });
-    }
+    });
   }
 
   Future<void> savePlayers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String playersJson = jsonEncode(_selectedPlayers.map((key, value) {
-      return MapEntry(key, value.map((player) => player?.toJson()).toList());
-    }));
-    await prefs.setString('selectedPlayers', playersJson);
+    _selectedPlayers.forEach((position, players) {
+      for (int i = 0; i < players.length; i++) {
+        if (players[i] != null) {
+          prefs.setString('$position$i', _serializePlayer(players[i]!));
+        } else {
+          prefs.remove('$position$i');
+        }
+      }
+    });
+  }
+
+  String _serializePlayer(Player player) {
+    return '${player.playerName}|${player.position}|${player.goals}|${player.assists}|${player.cleanSheets}|${player.points}|${player.price}|${player.redCards}|${player.team}|${player.yellowCards}';
+  }
+
+  Player _deserializePlayer(String playerData) {
+    List<String> data = playerData.split('|');
+    return Player(
+      playerName: data[0],
+      position: data[1],
+      goals: data[2],
+      assists: data[3],
+      cleanSheets: data[4],
+      points: data[5],
+      price: data[6],
+      redCards: data[7],
+      team: data[8],
+      yellowCards: data[9],
+    );
   }
 
   Future<void> _navigateAndDisplaySelection(
