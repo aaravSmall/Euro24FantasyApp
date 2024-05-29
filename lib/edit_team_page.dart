@@ -1,10 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'search_player_page.dart';
-import 'player.dart';
-import 'dart:convert';
+import 'player.dart'; // Importing Player class from player.dart
 
 class EditTeamPage extends StatefulWidget {
   @override
@@ -29,43 +29,8 @@ class _EditTeamPageState extends State<EditTeamPage> {
     super.initState();
     selectedFormation = '4231';
     loadFormation();
-    loadPlayers(); // Load players when initializing the page
-
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user != null) {
-        loadPlayers(); // Load players if the user is logged in
-      } else {
-        savePlayers();
-        // No need to save players here, as they're saved when selecting a player
-      }
-    });
-
-    WidgetsBinding.instance!.addObserver(AppLifecycleListener(
-      onResume: () {
-        loadFormation();
-        loadPlayers();
-      },
-      onPause: () {
-        saveFormation(selectedFormation);
-        savePlayers();
-      },
-    ));
+    loadPlayers(); // Load players when initializing the state
   }
-
-  @override
-  void dispose() {
-    saveFormation(selectedFormation);
-    savePlayers();
-    super.dispose();
-  }
-
-  /*Future<void> savePlayers2() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String playersJson = jsonEncode(_selectedPlayers.map((key, value) {
-      return MapEntry(key, value.map((player) => player?.toJson()).toList());
-    }));
-    await prefs.setString('selectedPlayers', playersJson);
-  }*/
 
   Future<void> loadFormation() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -92,7 +57,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
   Future<void> loadPlayers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? playersJson = prefs.getString('selectedPlayers');
-    if (playersJson != null && playersJson.isNotEmpty) {
+    if (playersJson != null) {
       Map<String, dynamic> playersMap = jsonDecode(playersJson);
       setState(() {
         _selectedPlayers = playersMap.map((key, value) {
@@ -110,7 +75,9 @@ class _EditTeamPageState extends State<EditTeamPage> {
 
   Future<void> savePlayers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String playersJson = jsonEncode(_selectedPlayers);
+    String playersJson = jsonEncode(_selectedPlayers.map((key, value) {
+      return MapEntry(key, value.map((player) => player?.toJson()).toList());
+    }));
     await prefs.setString('selectedPlayers', playersJson);
   }
 
@@ -126,16 +93,10 @@ class _EditTeamPageState extends State<EditTeamPage> {
 
     if (result != null && result is List<Player>) {
       setState(() {
-        if (index < _selectedPlayers[positionSelected]!.length) {
-          _selectedPlayers[positionSelected]![index] =
-              result.isNotEmpty ? result[0] : null;
-        } else {
-          _selectedPlayers[positionSelected]!
-              .add(result.isNotEmpty ? result[0] : null);
-        }
+        _selectedPlayers[positionSelected]![index] =
+            result.isNotEmpty ? result[0] : null;
       });
-
-      savePlayers();
+      await savePlayers(); // Save players immediately after selection
     }
   }
 
@@ -183,7 +144,6 @@ class _EditTeamPageState extends State<EditTeamPage> {
                 SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: () {
-                    savePlayers(); // Save players when confirming
                     Navigator.pop(context);
                   },
                   child: Text('Confirm'),
@@ -300,7 +260,7 @@ class _EditTeamPageState extends State<EditTeamPage> {
   }
 
   Widget _buildSearchButton(String positionSelected, int index) {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         _navigateAndDisplaySelection(context, positionSelected, index);
       },
@@ -319,7 +279,10 @@ class _EditTeamPageState extends State<EditTeamPage> {
           ],
         ),
         child: Center(
-          child: Icon(Icons.add, color: Colors.white),
+          child: Text(
+            '+',
+            style: TextStyle(color: Colors.white, fontSize: 32),
+          ),
         ),
       ),
     );
