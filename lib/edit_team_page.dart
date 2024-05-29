@@ -11,6 +11,8 @@ class EditTeamPage extends StatefulWidget {
   _EditTeamPageState createState() => _EditTeamPageState();
 }
 
+//I love my life so much
+
 class _EditTeamPageState extends State<EditTeamPage> {
   late String selectedFormation;
   Map<String, List<Player?>> _selectedPlayers = {
