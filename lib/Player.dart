@@ -38,6 +38,7 @@ class Player {
     };
   }
 
+
   factory Player.fromJson(Map<String, dynamic> json) {
     return Player(
       playerName: json['playerName'],
