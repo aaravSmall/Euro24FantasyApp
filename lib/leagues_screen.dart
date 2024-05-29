@@ -1,140 +1,143 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(BracketPredictorApp());
-}
-
-class BracketPredictorApp extends StatelessWidget {
+class TournamentScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Euro 2024 Bracket Predictor',
-      home: BracketPredictorScreen(),
-    );
-  }
+  _TournamentScreenState createState() => _TournamentScreenState();
 }
 
-//iebfhvbsrsiulv
-//bgfivhfdbihrbgfv
-//gbfivhbnigvtuebiui
-class BracketPredictorScreen extends StatefulWidget {
-  @override
-  _BracketPredictorScreenState createState() => _BracketPredictorScreenState();
-}
+class _TournamentScreenState extends State<TournamentScreen> {
+  List<Group> groups = [
+    Group(name: 'Group A', teams: [Team('Germany'), Team('Scotland'), Team('Hungary'), Team('Switzerland')]),
+    Group(name: 'Group B', teams: [Team('Spain'), Team('Croatia'), Team('Italy'), Team('Albania')]),
+    Group(name: 'Group C', teams: [Team('Slovenia'), Team('Denmark'), Team('Serbia'), Team('England')]),
+    Group(name: 'Group D', teams: [Team('Poland'), Team('Netherlands'), Team('Austria'), Team('France')]),
+    Group(name: 'Group E', teams: [Team('Belgium'), Team('Slovakia'), Team('Romania'), Team('Ukraine')]),
+    Group(name: 'Group F', teams: [Team('Turkey'), Team('Georgia'), Team('Portugal'), Team('Czech Republic')]),
+  ];
 
-class _BracketPredictorScreenState extends State<BracketPredictorScreen> {
-  List<String> groupA = ['Germany', 'Scotland', 'Hungary', 'Switzerland'];
-  List<String> groupB = ['Spain', 'Croatia', 'Italy', 'Albania'];
-  List<String> groupC = ['Slovenia', 'Denmark', 'Serbia', 'England'];
-  List<String> groupD = ['Poland', 'Netherlands', 'Austria', 'France'];
-  List<String> groupE = ['Belgium', 'Slovakia', 'Romania', 'Ukraine'];
-  List<String> groupF = ['Turkey', 'Georgia', 'Portugal', 'Czech Republic'];
-  // Add other groups similarly
-
-  late List<String?> selectedTeams;
+  List<Match> matches = [];
 
   @override
   void initState() {
     super.initState();
-    selectedTeams = List.filled(24, null); // 24 teams in total
+    // Initialize knockout stage matches based on group standings
+    // This is just an example, you need to implement the logic to determine the actual matches
+    matches = [
+      Match(team1: groups[0].teams[0], team2: groups[1].teams[1]),
+      Match(team1: groups[1].teams[0], team2: groups[0].teams[1]),
+      Match(team1: groups[2].teams[0], team2: groups[3].teams[1]),
+      Match(team1: groups[3].teams[0], team2: groups[2].teams[1]),
+      Match(team1: groups[4].teams[0], team2: groups[5].teams[1]),
+      Match(team1: groups[5].teams[0], team2: groups[4].teams[1]),
+      // Add other matches here
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Euro 2024 Bracket Predictor'),
-      ),
+      appBar: AppBar(title: Text('Euro 2020 Predictor')),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Bracket Stage Predictions',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ),
+            Text('Group Stage', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            ...groups.map((group) => GroupWidget(group: group)).toList(),
             SizedBox(height: 20),
-            buildGroupBracket(groupA, 'Group A'),
-            SizedBox(height: 20),
-            buildGroupBracket(groupB, 'Group B'),
-            SizedBox(height: 20),
-            buildGroupBracket(groupC, 'Group C'),
-            SizedBox(height: 20),
-            buildGroupBracket(groupD, 'Group D'),
-            SizedBox(height: 20),
-            buildGroupBracket(groupE, 'Group E'),
-            SizedBox(height: 20),
-            buildGroupBracket(groupF, 'Group F'),
-            SizedBox(height: 20),
-            // Add other group brackets similarly
-            ElevatedButton(
-              onPressed: () {
-                // Handle button press to submit predictions
-              },
-              child: Text('Submit Predictions'),
-            ),
+            Text('Knockout Stage', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            ...matches.map((match) => MatchWidget(match: match)).toList(),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget buildGroupBracket(List<String> groupTeams, String groupName) {
+class GroupWidget extends StatelessWidget {
+  final Group group;
+
+  GroupWidget({required this.group});
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              groupName,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            buildMatchup('Winner A', groupTeams[0], groupTeams[1]),
-            SizedBox(height: 8),
-            buildMatchup('Winner B', groupTeams[2], groupTeams[3]),
-          ],
-        ),
+      child: Column(
+        children: [
+          Text(group.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          ...group.teams.map((team) => ListTile(title: Text(team.name))).toList(),
+        ],
       ),
     );
   }
+}
 
-  Widget buildMatchup(String label, String team1, String team2) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+class MatchWidget extends StatefulWidget {
+  final Match match;
+
+  MatchWidget({required this.match});
+
+  @override
+  _MatchWidgetState createState() => _MatchWidgetState();
+}
+
+class _MatchWidgetState extends State<MatchWidget> {
+  Team? selectedWinner;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(widget.match.team1.name),
+            trailing: Radio<Team>(
+              value: widget.match.team1,
+              groupValue: selectedWinner,
+              onChanged: (Team? value) {
+                setState(() {
+                  selectedWinner = value;
+                  widget.match.winner = value;
+                });
+              },
+            ),
           ),
-        ),
-        SizedBox(width: 20),
-        Expanded(
-          flex: 2,
-          child: DropdownButton<String>(
-            value: selectedTeams[groupA.indexOf(team1)] ?? null,
-            onChanged: (value) {
-              setState(() {
-                final index = groupA.indexOf(team1);
-                if (index != -1) {
-                  selectedTeams[index] = value;
-                }
-              });
-            },
-            items: [team1, team2].map<DropdownMenuItem<String>>((String team) {
-              return DropdownMenuItem<String>(
-                value: team,
-                child: Text(team),
-              );
-            }).toList(),
+          ListTile(
+            title: Text(widget.match.team2.name),
+            trailing: Radio<Team>(
+              value: widget.match.team2,
+              groupValue: selectedWinner,
+              onChanged: (Team? value) {
+                setState(() {
+                  selectedWinner = value;
+                  widget.match.winner = value;
+                });
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
+}
+
+class Team {
+  final String name;
+
+  Team(this.name);
+}
+
+// models/match.dart
+class Match {
+  final Team team1;
+  final Team team2;
+  Team? winner;
+
+  Match({required this.team1, required this.team2, this.winner});
+}
+
+// models/group.dart
+class Group {
+  final String name;
+  final List<Team> teams;
+
+  Group({required this.name, required this.teams});
 }

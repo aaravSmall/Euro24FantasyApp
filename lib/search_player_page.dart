@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'player.dart'; // Importing Player class from player.dart
+import 'Player.dart'; // Importing Player class from player.dart
 import 'edit_team_page.dart';
 
 class SearchPlayerPage extends StatefulWidget {
@@ -355,3 +355,4 @@ class _SearchPlayerPageState extends State<SearchPlayerPage> {
     );
   }
 }
+
